@@ -1,0 +1,124 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-a970b982acf79a6d3c88.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "QtVulkanApp",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "PreBuildCommandCF::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-PreBuildCommandCF-Debug-7459bc88259573aed09c.json",
+					"name" : "PreBuildCommandCF",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "PreBuildCommandCV::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-PreBuildCommandCV-Debug-0dee2d87818c20ff4717.json",
+					"name" : "PreBuildCommandCV",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "PreBuildCommandTF::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-PreBuildCommandTF-Debug-f30e72582b11401bdb41.json",
+					"name" : "PreBuildCommandTF",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "PreBuildCommandTV::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-PreBuildCommandTV-Debug-184c1304ca801616abb0.json",
+					"name" : "PreBuildCommandTV",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QtVulkanApp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtVulkanApp-Debug-9bf4410d6a7980a55175.json",
+					"name" : "QtVulkanApp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QtVulkanApp_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtVulkanApp_autogen-Debug-b22d569b3ef7a6f6fed2.json",
+					"name" : "QtVulkanApp_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QtVulkanApp_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtVulkanApp_autogen_timestamp_deps-Debug-efdf2322ad911f08e060.json",
+					"name" : "QtVulkanApp_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Shaders::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Shaders-Debug-91309cd1a0a39aaeab0e.json",
+					"name" : "Shaders",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/UnrealProjects/PhysicsRollingBall/Comp2Ball/build/Desktop_Qt_6_8_3_MSVC2022_64bit-Debug",
+		"source" : "C:/UnrealProjects/PhysicsRollingBall/Comp2Ball"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
