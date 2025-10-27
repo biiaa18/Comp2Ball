@@ -45,6 +45,7 @@ Makefile*
 # Qts build folder
 /build
 build\
+build/
 
 # Qt unit tests
 target_wrapper.*
@@ -94,5 +95,6 @@ CMakeUserPresets.json
 # *.spv
 *.user
 
-
-
+git rm --cached .log
+git rm --cached .json
+git rm --cached build/
