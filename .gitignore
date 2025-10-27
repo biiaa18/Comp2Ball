@@ -93,8 +93,6 @@ CMakeUserPresets.json
 
 # spir-v files, since we compile them from shader files
 # *.spv
+
 *.user
 
-git rm --cached .log
-git rm --cached .json
-git rm --cached build/
