@@ -44,6 +44,7 @@ Makefile*
 
 # Qts build folder
 /build
+build\
 
 # Qt unit tests
 target_wrapper.*
@@ -81,6 +82,9 @@ release/*
 *.sln
 *.aps
 *.h.cpp
+*.idx
+*.ninja_log
+*.log
 
 /out
 CMakePresets.json
@@ -88,3 +92,7 @@ CMakeUserPresets.json
 
 # spir-v files, since we compile them from shader files
 # *.spv
+*.user
+
+
+
