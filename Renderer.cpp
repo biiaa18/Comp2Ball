@@ -38,7 +38,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //TriangleSurface* surf=new TriangleSurface({{0.0f,1.0f,1.f},{1.f,0.0f, 0.0f}, {2.f,1.f,1.f},{3.f,0.f,0.f},{4.f,1.f,1.f}});
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
-    TriangleSurface* surf=new TriangleSurface(assetPath+"Compulsory2.txt"); //check
+    TriangleSurface* surf=new TriangleSurface(assetPath+"just_vertices.txt"); //check
 
     //------------------------compulsory 2 cloud point----------------
     //TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt",1);
@@ -46,12 +46,12 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //mObjects.at(0)->setPosition(-588163.60f, 0.f, -7181200.45f);
 
     //------------ROLLING BALL------------
-    RollingBall* ball=new RollingBall(surf);
-    mObjects.push_back(ball);
-    mObjects.at(1)->scale(0.1);
+    // RollingBall* ball=new RollingBall(surf);
+    // mObjects.push_back(ball);
+    // mObjects.at(1)->scale(0.1);
     //-------------------QUADRATIC SPLINE
     //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate));
-    mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate,mObjects.at(0)->ctrl_p_flate.size(),2, surf));
+    //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate,mObjects.at(0)->ctrl_p_flate.size(),2, surf));
 
 
     mObjects.push_back((new WorldAxis()));
@@ -391,8 +391,8 @@ void Renderer::startNextFrame()
     mDeviceFunctions->vkCmdEndRenderPass(commandBuffer);
 
     // move ball
-    QVector2D pos={mObjects.at(1)->getPosition().x(), mObjects.at(1)->getPosition().z()};
-    mObjects.at(1)->barysentriske(pos,0.0016f);
+    // QVector2D pos={mObjects.at(1)->getPosition().x(), mObjects.at(1)->getPosition().z()};
+    // mObjects.at(1)->barysentriske(pos,0.0016f);
     
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

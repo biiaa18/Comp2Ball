@@ -5,10 +5,12 @@
 class Triangle : public VisualObject{
 public:
     //vertices for a triangle
-    int v0;
-    int v1;
-    int v2;
+    int indeks[3];
+    // int v0;
+    // int v1;
+    // int v2;
     // //neighbours
+    int nabo[3];
     // int n0;
     // int n1;
     // int n2;

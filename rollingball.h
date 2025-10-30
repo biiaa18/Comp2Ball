@@ -2,6 +2,7 @@
 #define ROLLINGBALL_H
 #include "TriangleSurface.h"
 #include "oktaederclass.h"
+
 class RollingBall: public oktaederClass
 {
 public:

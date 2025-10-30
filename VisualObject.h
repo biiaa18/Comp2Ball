@@ -51,7 +51,9 @@ public:
 
     std::vector<QVector2D> ctrl_p_flate;
     virtual float barysentriske(QVector2D vertx, float dt){return 1.f;};
+    //virtual float barysentriskePoint(QVector2D vertx, Quadr){return 1.f;};
 };
+
 
 #endif // VISUALOBJECT_H
 

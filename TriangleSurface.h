@@ -9,6 +9,7 @@
 #include <QPointF>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include "quadtree.h"
 
 // Structure to represent a 2D point
 struct Point {
@@ -48,15 +49,31 @@ public:
         return det > 0;
     }
 
-    // Generate a super-triangle that covers all points
+    float xmin{0}, xmax{0}, ymin{0},ymax{0};
+    QuadTree* quad;
+    //float barysentriske(QVector2D vertx, float dt) override;
+    // float averageHeight(QuadTree* quadtr);
+    std::vector<QuadTree*> leaves;
+    std::vector<Vertex> Vertices;
     Triangle_ getSuperTriangle(const std::vector<Point>& points);
-
     // Perform Delaunay Triangulation using Bowyer-Watson algorithm
     std::vector<Triangle_> delaunayTriangulation(std::vector<Point>& points);
+    void triangulate (int width, int height);
 
 };
 
+struct rute { //potentially use a quadtree?? and subdivide it will decide the "oppløsning"?
+    rute(float xmin_, float ymin_, float xmax_, float ymax_): xmin(xmin_), ymin(ymin_), xmax(xmax_), ymax(ymax_){};
+    float xmin, xmax, ymin,ymax;
+    QVector2D midtpunkt=middle({xmin,ymin},{xmax,ymax});
 
+    QVector2D middle(const QVector2D& p1,const QVector2D& p2){
+        QVector2D m;
+        m.setX((p2.x()+p1.x())/2);
+        m.setY((p2.y()+p1.y())/2);
+        return m;
+    }
+};
 
 
 #endif // TRIANGLESURFACE_H
