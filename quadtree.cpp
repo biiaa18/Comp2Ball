@@ -34,6 +34,7 @@ void QuadTree::subDivide(int n)
 QuadTree *QuadTree::findObject(QVector2D *Point)
 {
     QVector2D ObjectPos={Point->x(),Point->y()};
+
     if(isLeaf()){
         return this;
     }
@@ -87,6 +88,25 @@ void QuadTree::findLeaves(std::vector<QuadTree*>* leaves)
     //return this;
 }
 
+std::vector<QuadTree *> QuadTree::findLeaves2(std::vector<QuadTree *> *leaves)
+{
+    if(isLeaf()){
+        leaves->push_back(this);
+        return *leaves;
+    }
+    else{
+        if (sv) //south left
+            sv->findLeaves(leaves);
+        if (so) //south right
+            so->findLeaves(leaves);
+        if (nv) //north left
+            nv->findLeaves(leaves);
+        if (no) //north right
+            no->findLeaves(leaves);
+    }
+
+}
+
 float QuadTree::averageHeight(QuadTree *quadtr)
 {
     float height=0;
@@ -97,15 +117,36 @@ float QuadTree::averageHeight(QuadTree *quadtr)
         height=height/(quadtr->VerticesInQuad.size());
         return height;
     }
-    return height; //change later maybe to not 0
+    return quadtr->m.y(); //change later maybe to not 0
 }
 
-QuadTree *QuadTree::insertObject(QVector3D *Point)
+bool QuadTree::hasPoint(QVector2D &Point)
+{
+    if(Point.x()>=A.x() && Point.y()<=C.y() && Point.x()<=C.x() && Point.y()>=A.y()) //m=A+C, and we compare to middle point in leaf
+        return true;
+
+    return false;
+}
+
+QuadTree *QuadTree::insertObject(QVector3D *Point,QuadTree* parent)
 {
     QVector2D ObjectPos={Point->x(),Point->z()};
     if(isLeaf()){
-        VerticesInQuad.push_back(Point);
-        return this;
+        if(hasPoint(ObjectPos)){
+            VerticesInQuad.push_back(Point);
+            return this;
+        }
+        else{
+            std::vector<QuadTree*> leaves;
+            leaves=parent->findLeaves2(&leaves); //find all leaves of parent tree to find the correct leaf and insert the point in it
+            for(QuadTree* it: leaves){
+                if(it->hasPoint(ObjectPos)){
+                    it->VerticesInQuad.push_back(Point);
+                    return it;
+                }
+            }
+
+        }
     }
     else{
         m=middle(A,C);
@@ -113,22 +154,22 @@ QuadTree *QuadTree::insertObject(QVector3D *Point)
             //we are at the "south"
             if(ObjectPos.x()<m.x()){
                 //we go left-> sv
-                sv->insertObject(Point);
+                sv->insertObject(Point,parent);
             }
             else{
                 //we go right-> so
-                so->insertObject(Point);
+                so->insertObject(Point,parent);
             }
         }
         else{
             //we are at the "north"
             if(ObjectPos.x()<m.x()){
                 //we go left-> sv
-                nv->insertObject(Point);
+                nv->insertObject(Point,parent);
             }
             else{
                 //we go right-> so
-                no->insertObject(Point);
+                no->insertObject(Point,parent);
             }
         }
         return this;// is this where we return the quadtree?
