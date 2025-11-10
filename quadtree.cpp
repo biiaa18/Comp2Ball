@@ -9,18 +9,22 @@ void QuadTree::subDivide(int n)
         QVector2D d_={middle(D,A).x(),middle(D,A).z()};
 
         m=middle(A,C);
-
+        qDebug()<<"m: "<<m.x()<<" "<<m.z()<<"\n";
         sv=new QuadTree(A,a_,{m.x(),m.z()},d_);
         sv->subDivide(n-1);
+        sv->m=middle(sv->A,sv->C); //we need children to have middle points, otherwise we wont be able to create a grid from middle points
         sv->print();
         so=new QuadTree(a_,B,b_,{m.x(),m.z()});
         so->subDivide(n-1);
+        so->m=middle(so->A,so->C);
         so->print();
         no=new QuadTree({m.x(),m.z()},b_,C,c_);
         no->subDivide(n-1);
+        no->m=middle(no->A,no->C);
         no->print();
         nv=new QuadTree(d_,{m.x(),m.z()},c_,D);
         nv->subDivide(n-1);
+        nv->m=middle(nv->A,nv->C);
         nv->print();
 
     }
@@ -61,11 +65,13 @@ QuadTree *QuadTree::findObject(QVector2D *Point)
     }
 }
 
-void QuadTree::findLeaves(std::vector<QuadTree*> leaves)
+void QuadTree::findLeaves(std::vector<QuadTree*>* leaves)
 {
+    //std::vector<QuadTree*> leaves;
     if(isLeaf()){
-        this->m.setY(averageHeight(this)); //set middle point y value as average height of all points inside the quad
-        leaves.push_back(this);
+        m.setY(averageHeight(this)); //set middle point y value as average height of all points inside the quad
+        leaves->push_back(this);
+        //return this;
     }
     else{
         if (sv) //south left
@@ -76,8 +82,9 @@ void QuadTree::findLeaves(std::vector<QuadTree*> leaves)
             nv->findLeaves(leaves);
         if (no) //north right
             no->findLeaves(leaves);
-
     }
+
+    //return this;
 }
 
 float QuadTree::averageHeight(QuadTree *quadtr)
@@ -87,7 +94,7 @@ float QuadTree::averageHeight(QuadTree *quadtr)
         for(QVector3D* p: quadtr->VerticesInQuad){
             height+=p->y();
         }
-        height=height/(quadtr->VerticesInQuad.size()-1);
+        height=height/(quadtr->VerticesInQuad.size());
         return height;
     }
     return height; //change later maybe to not 0
@@ -95,14 +102,14 @@ float QuadTree::averageHeight(QuadTree *quadtr)
 
 QuadTree *QuadTree::insertObject(QVector3D *Point)
 {
-    QVector2D ObjectPos={Point->x(),Point->y()};
+    QVector2D ObjectPos={Point->x(),Point->z()};
     if(isLeaf()){
         VerticesInQuad.push_back(Point);
         return this;
     }
     else{
         m=middle(A,C);
-        if(ObjectPos.y()<m.y()){
+        if(ObjectPos.y()<m.z()){
             //we are at the "south"
             if(ObjectPos.x()<m.x()){
                 //we go left-> sv

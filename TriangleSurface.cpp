@@ -135,7 +135,7 @@ TriangleSurface::TriangleSurface(const std::string& vertics, const std::string& 
 
 TriangleSurface::TriangleSurface(const std::string& filename)
 {
-    drawType=1; //testing , should be 0 for triangles;
+    drawType=0; //testing , should be 0 for triangles;
 
     std::ifstream inn(filename);
     if (!inn.is_open())
@@ -153,9 +153,10 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         xmax=v.x;
         ymin=v.z;
         ymax=v.z;
+        Vertices.push_back(v);
         qDebug() <<"first line------ x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
     }
-    for (auto i=0; i<n; i++)
+    for (auto i=0; i<n-1; i++)
     {
         inn >> v;
         xmin=fmin(xmin,v.x);
@@ -163,7 +164,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         xmax=fmax(xmax,v.x);
         ymax=fmax(ymax,v.z);
         Vertices.push_back(v);
-
+        //mVertices.push_back(v);
        // points.push_back({v.x, v.z});
         //ctrl_p_flate.push_back({v.x,v.z});
         //mIndices.push_back(i);
@@ -171,8 +172,9 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     }
     inn.close();
     qDebug() << "x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
+    //---------------------sv--------so------------no----------nv
     quad=new QuadTree({xmin,ymin},{xmax,ymin}, {xmax,ymax},{xmin,ymax}); //convex hull
-    int number=1;
+    int number=2;
     quad->subDivide(number);
     //number of quads in row and column are same, since quad tree is subdividing everything equally
     int opplosning=std::pow(2,number); //2^n, for 1 subdivision - 4 trees: 2 rows+ 2 columns, etc.
@@ -183,10 +185,11 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         QVector3D point={v.x, v.y,v.z}; //need height to calculate average height for the middle points (future indices)
         QVector3D* v_ptr;
         v_ptr=&point;
-        quad->insertObject(v_ptr); //insert points (vertices) into quadtree so we can search where they are later)
+        quad->insertObject(v_ptr); //insert points (vertices) into each corresponding quadtree so we can search where they are later)
     }
     //loop through all quads and calculate the average .y from quad->VerticesInQuad and update middle quad->m (middle point);
-    quad->findLeaves(leaves);//now we store all leaves with updated average height for middle point
+    quad->findLeaves(&leaves);//now we store all leaves with updated average height for middle point and have a grid made of middle points
+    //pushing vertices (our middle points) into mvertices for rendering and
     for(QuadTree* it:leaves){
         Vertex v;
         v.x=it->m.x();
@@ -197,12 +200,14 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         v.b=0.f;
         v.u=0.f;
         v.v=0.f;
+        qDebug() << v.x << v.y << v.z;
         mVertices.push_back(v);
 
-        algorithm for mIndices.push_back(leaves[i])
+        triangulate(width, height);
+        //algorithm for mIndices.push_back(leaves[i])
     }
 
-
+    //----------------------------------------------------------------------------------------------------------------------------------------
 
 
 

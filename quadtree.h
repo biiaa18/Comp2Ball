@@ -25,7 +25,7 @@ struct QuadTree
     QuadTree* findObject(QVector2D* Point);
     QuadTree* insertObject(VisualObject* GameObject);
     QuadTree* insertObject(QVector3D* Point);
-    void findLeaves( std::vector<QuadTree*> leaves);
+    void findLeaves(std::vector<QuadTree*>* leaves);
     float averageHeight(QuadTree* quadtr);
 
 
