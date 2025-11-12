@@ -59,7 +59,7 @@ public:
     // Perform Delaunay Triangulation using Bowyer-Watson algorithm
     std::vector<Triangle_> delaunayTriangulation(std::vector<Point>& points);
     void triangulate (int width, int height);
-
+    void reorderVertices();
 };
 
 struct rute { //potentially use a quadtree?? and subdivide it will decide the "oppløsning"?

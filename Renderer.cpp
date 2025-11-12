@@ -38,12 +38,15 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //TriangleSurface* surf=new TriangleSurface({{0.0f,1.0f,1.f},{1.f,0.0f, 0.0f}, {2.f,1.f,1.f},{3.f,0.f,0.f},{4.f,1.f,1.f}});
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
-    TriangleSurface* surf=new TriangleSurface(assetPath+"just_vertices.txt"); //check
-    //TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt"); //check
+    //TriangleSurface* surf=new TriangleSurface(assetPath+"just_vertices.txt"); //check
     //------------------------compulsory 2 cloud point----------------
-    //TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt",1);
+    TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
+    //TriangleSurface* surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
     mObjects.push_back((surf));
-    //mObjects.at(0)->setPosition(-588200.60f, -100.f, -7181230.45f);
+    //mObjects.push_back((surf2));
+    mObjects.at(0)->setPosition(-588200.60f, 0.f, -7181230.45f);
+    //mObjects.at(1)->setPosition(-588200.60f, 0.f, -7181230.45f);
+
     //mObjects.at(0)->setPosition(0.f, -2.f, 1.f);
 
     //------------ROLLING BALL------------

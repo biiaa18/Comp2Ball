@@ -154,7 +154,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         ymin=v.z;
         ymax=v.z;
         Vertices.push_back(v);
-        qDebug() <<"first line------ x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
+        //qDebug() <<"first line------ x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
     }
     for (auto i=0; i<n-1; i++)
     {
@@ -174,7 +174,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     qDebug() << "x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
     //---------------------sv--------so------------no----------nv
     quad=new QuadTree({xmin,ymin},{xmax,ymin}, {xmax,ymax},{xmin,ymax}); //convex hull
-    int number=1;
+    int number=5;
     quad->subDivide(number);
     //number of quads in row and column are same, since quad tree is subdividing everything equally
     int opplosning=std::pow(2,number); //2^n, for 1 subdivision - 4 trees: 2 rows+ 2 columns, etc.
@@ -189,6 +189,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     //loop through all quads and calculate the average .y from quad->VerticesInQuad and update middle quad->m (middle point);
     quad->findLeaves(&leaves);//now we store all leaves with updated average height for middle point and have a grid made of middle points
     //pushing vertices (our middle points) into mvertices for rendering and
+    reorderVertices();
     for(QuadTree* it:leaves){
         Vertex v;
         v.x=it->m.x();
@@ -197,14 +198,13 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         v.r=1.f;
         v.g=0.f;
         v.b=0.f;
-        v.u=0.f;
-        v.v=0.f;
-        qDebug() << v.x << v.y << v.z;
+        v.u=0.5f;
+        v.v=0.9f;
+        //qDebug() << v.x << v.y << v.z;
         mVertices.push_back(v);
-
-        triangulate(width, height);
         //algorithm for mIndices.push_back(leaves[i])
     }
+    triangulate(width, height);
 
     //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -249,19 +249,61 @@ TriangleSurface::TriangleSurface(const std::string& filename)
 
 void TriangleSurface::triangulate(int width, int height)
 {
-    for(int d{0}; d < height-1; ++d)        //height - 1 because we draw the last quad from height - 1 and in negative z direction
+    for(int d=0; d < height-1; ++d)        //height - 1 because we draw the last quad from height - 1 and in negative z direction
     {
-        for(int w{0}; w < width-1; ++w)    //width - 1 because we draw the last quad from width - 1 and in positive x direction
+        for(int w=0; w < width-1; ++w)    //width - 1 because we draw the last quad from width - 1 and in positive x direction
         {
             //Indices for one quad:
-            mIndices.emplace_back(w + d * width);               // 0 + 0 * mWidth               = 0
-            mIndices.emplace_back(w + d * width + width + 1);   // 0 + 0 * mWidth + mWidth + 1  = mWidth + 1
-            mIndices.emplace_back(w + d * width + width);       // 0 + 0 * mWidth + mWidth      = mWidth
-            mIndices.emplace_back(w + d * width);               // 0 + 0 * mWidth               = 0
-            mIndices.emplace_back(w + d * width + 1);           // 0 + 0 * mWidth + 1           = 1
-            mIndices.emplace_back(w + d * width + width + 1);   // 0 + 0 * mWidth + mWidth + 1  = mWidth + 1
+            //          --
+            //          |/         start bottom left, go to right corner på skrå, then left, then "down"
+            mIndices.emplace_back(w + d * width);               // 0 + 0 * mWidth               = 0             0
+            mIndices.emplace_back(w + d * width + width + 1);   // 0 + 0 * mWidth + mWidth + 1  = mWidth + 1    3
+            mIndices.emplace_back(w + d * width + width);       // 0 + 0 * mWidth + mWidth      = mWidth        2
+            //second triangle
+            //          /|
+            //          --
+            mIndices.emplace_back(w + d * width);               // 0 + 0 * mWidth               = 0             0
+            mIndices.emplace_back(w + d * width + 1);           // 0 + 0 * mWidth + 1           = 1             1
+            mIndices.emplace_back(w + d * width + width + 1);   // 0 + 0 * mWidth + mWidth + 1  = mWidth + 1    3
+            //we end up with quad
+            //         ---
+            //         |/|
+            //         ---
         }
     }
+}
+
+void TriangleSurface::reorderVertices()
+{
+    std::sort(leaves.begin(), leaves.end(),
+              []( QuadTree*v, QuadTree*v_ ) { //leaves is vector of QuadTree*, so thats what we iterate through,
+                    //but we care about comparing the x and z values of middle points of our leaves
+                  //------- sort vertices from lowest y to highest
+                  if (std::abs(v->m.z()-v_->m.z())>0.01f) {//check if they are in same column (have different y values)
+                    return v->m.z()<v_->m.z(); ///if this returns true (z of v is less than z of v_) - we return v, if not - v_
+                  }
+                  //-----------sort vertices from lowest x to highest, if they are in same row (so they have same y values)
+                  else{
+                      return v->m.x()<v_->m.x();
+                  }
+                  // else{ //if it doesnt get sorted by x value because they are equal, it will differ in y value
+                  //   return v_->m.x()<v->m.x();
+                  // }
+                  // sort vertices from lowest y to highest
+                  /*if (v->m.z()<v_->m.z()) {
+                      return v->m.z()<v_->m.z();
+                  }
+                  else{ //if it doesnt get sorted by x value because they are equal, it will differ in y value
+                      return v_->m.z()<v->m.z();
+
+                  }*/
+
+
+    });
+    // for (const auto& num : leaves) {
+    //     qDebug() << "x  " << num->m.x() << " y " << num->m.z()
+    //          << " )\n";
+    // }
 }
 
 // float TriangleSurface::averageHeight(QuadTree *quadtr)
