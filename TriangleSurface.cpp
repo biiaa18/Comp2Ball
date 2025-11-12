@@ -182,9 +182,8 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     int height=opplosning;
 
     for (Vertex& v: Vertices){
-        QVector3D point={v.x, v.y,v.z}; //need height to calculate average height for the middle points (future indices)
-        QVector3D* v_ptr;
-        v_ptr=&point;
+         //need height to calculate average height for the middle points (future indices)
+        QVector3D* v_ptr=new QVector3D(v.x, v.y,v.z);
         quad->insertObject(v_ptr,quad); //insert points (vertices) into each corresponding quadtree so we can search where they are later)
     }
     //loop through all quads and calculate the average .y from quad->VerticesInQuad and update middle quad->m (middle point);

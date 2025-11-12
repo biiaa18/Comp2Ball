@@ -133,7 +133,7 @@ QuadTree *QuadTree::insertObject(QVector3D *Point,QuadTree* parent)
     QVector2D ObjectPos={Point->x(),Point->z()};
     if(isLeaf()){
         if(hasPoint(ObjectPos)){
-            VerticesInQuad.push_back(Point);
+            this->VerticesInQuad.push_back(Point);
             return this;
         }
         else{
@@ -149,10 +149,10 @@ QuadTree *QuadTree::insertObject(QVector3D *Point,QuadTree* parent)
         }
     }
     else{
-        m=middle(A,C);
-        if(ObjectPos.y()<m.z()){
+        //m=middle(A,C);
+        if(ObjectPos.y()<this->m.z()){
             //we are at the "south"
-            if(ObjectPos.x()<m.x()){
+            if(ObjectPos.x()<this->m.x()){
                 //we go left-> sv
                 sv->insertObject(Point,parent);
             }
@@ -163,7 +163,7 @@ QuadTree *QuadTree::insertObject(QVector3D *Point,QuadTree* parent)
         }
         else{
             //we are at the "north"
-            if(ObjectPos.x()<m.x()){
+            if(ObjectPos.x()<this->m.x()){
                 //we go left-> sv
                 nv->insertObject(Point,parent);
             }
