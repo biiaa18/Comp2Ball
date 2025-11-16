@@ -84,6 +84,12 @@ void Camera::rotate(float t, float x, float y, float z)
     mViewMatrix.rotate(t,x,y,z);
 }
 
+void Camera::moveForward(float delta)
+{
+    mPosition.setZ(mPosition.z() + delta);
+
+}
+
 //QMatrix4x4 Camera::cMatrix()
 //{
 //    return mProjectionMatrix * mViewMatrix;

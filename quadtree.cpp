@@ -9,23 +9,23 @@ void QuadTree::subDivide(int n)
         QVector2D d_={middle(D,A).x(),middle(D,A).z()};
 
         m=middle(A,C);
-        qDebug()<<"m: "<<m.x()<<" "<<m.z()<<"\n";
+        //qDebug()<<"m: "<<m.x()<<" "<<m.z()<<"\n";
         sv=new QuadTree(A,a_,{m.x(),m.z()},d_);
         sv->subDivide(n-1);
         sv->m=middle(sv->A,sv->C); //we need children to have middle points, otherwise we wont be able to create a grid from middle points
-        sv->print();
+        //sv->print();
         so=new QuadTree(a_,B,b_,{m.x(),m.z()});
         so->subDivide(n-1);
         so->m=middle(so->A,so->C);
-        so->print();
+        //so->print();
         no=new QuadTree({m.x(),m.z()},b_,C,c_);
         no->subDivide(n-1);
         no->m=middle(no->A,no->C);
-        no->print();
+        //no->print();
         nv=new QuadTree(d_,{m.x(),m.z()},c_,D);
         nv->subDivide(n-1);
         nv->m=middle(nv->A,nv->C);
-        nv->print();
+        //nv->print();
 
     }
 

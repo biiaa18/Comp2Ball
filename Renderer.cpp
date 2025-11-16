@@ -38,21 +38,22 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //TriangleSurface* surf=new TriangleSurface({{0.0f,1.0f,1.f},{1.f,0.0f, 0.0f}, {2.f,1.f,1.f},{3.f,0.f,0.f},{4.f,1.f,1.f}});
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
-    //TriangleSurface* surf=new TriangleSurface(assetPath+"just_vertices.txt"); //check
+    //TriangleSurface* surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
     //------------------------compulsory 2 cloud point----------------
     TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
     //TriangleSurface* surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
     mObjects.push_back((surf));
     //mObjects.push_back((surf2));
-    mObjects.at(0)->setPosition(-588200.60f, 0.f, -7181230.45f);
-    //mObjects.at(1)->setPosition(-588200.60f, 0.f, -7181230.45f);
+    //mObjects.at(0)->setPosition(-588400.60f, 0.f, -7181100.45f); //z closer to 0, further away from me
+    //mObjects.at(1)->setPosition(-588400.60f, 0.f, -7181100.45f);
 
+    //mObjects.at(0)->scale(0.5);
     //mObjects.at(0)->setPosition(0.f, -2.f, 1.f);
 
     //------------ROLLING BALL------------
-    // RollingBall* ball=new RollingBall(surf);
-    // mObjects.push_back(ball);
-    // mObjects.at(1)->scale(0.1);
+    RollingBall* ball=new RollingBall(surf);
+    mObjects.push_back(ball);
+    //mObjects.at(1)->scale(0.1);
     //-------------------QUADRATIC SPLINE
     //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate));
     //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate,mObjects.at(0)->ctrl_p_flate.size(),2, surf));
@@ -91,8 +92,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
  //        mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
 
 	//Inital position of the camera
-    mCamera.setPosition(QVector3D(-1, -2.0, -20));
-
+    mCamera.setPosition(QVector3D(-1.f, 30.0, 5.f)); //x+ left, z+ to me
+    mCamera.pitch(258);
+    //mCamera.setPosition(QVector3D(61.9f, -15.71283f, -150.45f));
     //Need access to our VulkanWindow so making a convenience pointer
     mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
 }
@@ -226,6 +228,26 @@ void Renderer::initResources()
 
     VkPipelineShaderStageCreateInfo shaderStagesC[] = { vertShaderCreateInfoC, fragShaderCreateInfoC };
 
+    /************************Light? Phong***********************/
+    // mColorMaterial.vertShaderModule = createShader(QStringLiteral(":/Phong.vert.spv"));
+    // mColorMaterial.fragShaderModule = createShader(QStringLiteral(":/Phong.frag.spv"));
+
+    // //Updated to more common way to write it:
+    // VkPipelineShaderStageCreateInfo vertShaderCreateInfoP{};
+    // vertShaderCreateInfoT.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    // vertShaderCreateInfoT.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    // vertShaderCreateInfoT.module = vertShaderModule;
+    // vertShaderCreateInfoT.pName = "main";                // start function in shader
+
+    // VkPipelineShaderStageCreateInfo fragShaderCreateInfoP{};
+    // fragShaderCreateInfoT.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    // fragShaderCreateInfoT.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    // fragShaderCreateInfoT.module = fragShaderModule;
+    // fragShaderCreateInfoT.pName = "main";                // start function in shader
+
+    // VkPipelineShaderStageCreateInfo shaderStagesP[] = { vertShaderCreateInfoP, fragShaderCreateInfoP };
+
+
 	/*********************** Graphics pipeline ********************************/
     VkGraphicsPipelineCreateInfo pipelineInfo{};    //Will use this variable a lot in the next 100s of lines
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -310,6 +332,16 @@ void Renderer::initResources()
     if (result != VK_SUCCESS)
         qFatal("Failed to create graphics pipeline: %d", result);
 
+    // //Making a pipeline for drawing lines
+    // mColorMaterial.pipeline = mPipelineP;                       // reusing most of the settings from the first pipeline
+    // inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;   // draw lines
+    // rasterization.polygonMode = VK_POLYGON_MODE_FILL;           // VK_POLYGON_MODE_LINE will make a wireframe; VK_POLYGON_MODE_FILL
+    // rasterization.lineWidth = 5.0f;
+    // pipelineInfo.pInputAssemblyState = &inputAssembly;
+    // pipelineInfo.pStages = shaderStagesP;
+    // result = mDeviceFunctions->vkCreateGraphicsPipelines(logicalDevice, mPipelineCache, 1, &pipelineInfo, nullptr, &mColorMaterial.pipeline);
+    // if (result != VK_SUCCESS)
+    //     qFatal("Failed to create graphics pipeline: %d", result);
 
 	// Destroying the shader modules, we won't need them anymore after the pipeline is created
     if (vertShaderModule)
@@ -344,7 +376,7 @@ void Renderer::initSwapChainResources()
     const QSize sz = mWindow->swapChainImageSize();
 
     //This sets the projection matrix - also when resizing the window:
-    mCamera.perspective(30.0f, sz.width() / (float) sz.height(), 0.01f, 800.0f);
+    mCamera.perspective(25.0f, sz.width() / (float) sz.height(), 0.01f, 600.0f);
 }
 
 void Renderer::startNextFrame()
@@ -370,7 +402,7 @@ void Renderer::startNextFrame()
     {
         //Draw type
 		if ((*it)->getDrawType() == 0)
-			mDeviceFunctions->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline1);
+            mDeviceFunctions->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline1); //mPipeline1
 		else
 			mDeviceFunctions->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mColorMaterial.pipeline);
 
@@ -378,7 +410,7 @@ void Renderer::startNextFrame()
         setModelMatrix((*it)->getMatrix()); //mvp);
         
         // Bind the texture descriptor set
-		setTexture(mTextureHandle, commandBuffer);
+        setTexture(mTextureHandle, commandBuffer);
         
         mDeviceFunctions->vkCmdBindVertexBuffers(commandBuffer, 0, 1, &(*it)->getVBuffer(), &vbOffset);
 		//Check if we have an index buffer - if so, use Indexed draw
@@ -395,8 +427,8 @@ void Renderer::startNextFrame()
     mDeviceFunctions->vkCmdEndRenderPass(commandBuffer);
 
     // move ball
-    // QVector2D pos={mObjects.at(1)->getPosition().x(), mObjects.at(1)->getPosition().z()};
-    // mObjects.at(1)->barysentriske(pos,0.0016f);
+    QVector2D pos={mObjects.at(1)->getPosition().x(), mObjects.at(1)->getPosition().z()};
+    mObjects.at(1)->barysentriske(pos,0.0016f);
     
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

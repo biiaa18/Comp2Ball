@@ -16,8 +16,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         Vertex A = triangle_surf->mVertices[triangle_surf->mIndices[i]];
         Vertex B = triangle_surf->mVertices[triangle_surf->mIndices[i + 1]];
         Vertex C = triangle_surf->mVertices[triangle_surf->mIndices[i + 2]];
-
-        //barycentric coordinates
+        //qDebug()<<"x "<<A.x<<" "<<B.x<<" "<<C.z<<" y:"<<A.z<<" "<<B.z<<" "<<C.z<<"\n";        //barycentric coordinates
         QVector2D AB=QVector2D{B.x-A.x, B.z-A.z};
         QVector2D AC=QVector2D{C.x-A.x, C.z-A.z};
         QVector2D AP=QVector2D{ballX-A.x, ballZ-A.z};
@@ -81,8 +80,8 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             rotation.normalize();
             float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
             //not sure why degree is inverted...
-            rotate(-degree, rotation.x(),rotation.y(), rotation.z());
-            qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
+            rotate(degree, rotation.x(),rotation.y(), rotation.z());
+            //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
             break;
         }
         else{
@@ -98,7 +97,9 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     triangle_surf = surface;
     //setPosition( -2.f, 3.f, 3.f);
     //setPosition( 2.f, 3.f, 2.f);
-    setPosition( 1.f, 2.5f, 2.f); //most fun to look at
+    //setPosition( 1.f, 2.5f, 2.f); //most fun to look at
     //setPosition( 0.f, 1.f, 4.f); //lowest point doesnt move anywhere
     //setPosition( 0.f, 2.f, 2.f); //in the middle
+    setPosition(-70.3f, 11.3f, 100.55f);
+    //setPosition( 0.f, 0.f, 0.f);
 };

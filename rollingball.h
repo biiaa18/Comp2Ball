@@ -15,7 +15,7 @@ public:
     QVector3D acceleration;
     QVector3D rotation;
     float mass=0.1;
-    float radius=0.1;
+    float radius=1;//0.1
     const float g=9.81;
     QVector3D G={0.f,-mass*g,0.f};
     //move

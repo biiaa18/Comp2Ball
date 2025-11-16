@@ -44,14 +44,33 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     //select file to import
     connect(nameButton, SIGNAL(clicked()), this, SLOT(selectName()));   // Dag 040225
 
+
     //Makes the layout of the program, adding items we have made
     QVBoxLayout *layout = new QVBoxLayout;
+
+    QLineEdit* x=new QLineEdit(vulkanWindowWrapper);
+    x->setPlaceholderText("new x");
+    connect(x, &QLineEdit::textChanged, this,[=](const QString& text){
+        x_=text.toFloat();
+
+    });
+
+    QLineEdit* y=new QLineEdit(vulkanWindowWrapper);
+    y->setPlaceholderText("new y");
+    QLineEdit* z=new QLineEdit(vulkanWindowWrapper);
+    z->setPlaceholderText("new z");
+    layout->addWidget(x,1);
+    layout->addWidget(y,2);
+    layout->addWidget(z,3);
+    //setBALLposition(x_,y_,z_);
     layout->setMenuBar(createMenu());
     layout->addWidget(vulkanWindowWrapper, 7);
     mInfoTab = new QTabWidget(this);
     mInfoTab->addTab(mLogWidget, tr("Debug Log"));
     layout->addWidget(mInfoTab, 2);
     QHBoxLayout *buttonLayout = new QHBoxLayout;
+
+
 
     buttonLayout->addWidget(nameButton, 1); // Dag 040225
     buttonLayout->addWidget(grabButton, 1);
@@ -135,4 +154,32 @@ void MainWindow::selectName()
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setDefaultButton(QMessageBox::Close);
     }
+}
+
+void MainWindow::setBALLposition(float x, float y, float z)
+{
+
+
+    // bool ok;
+    // QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+    //                                      tr("x:"), QLineEdit::Normal,
+    //                                      QDir::home().dirName(), &ok);
+    // if (ok && !text.isEmpty())
+    //     x=text.toFloat();
+
+    // QString text1 = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+    //                                      tr("y:"), QLineEdit::Normal,
+    //                                      QDir::home().dirName(), &ok);
+    // if (ok && !text.isEmpty())
+    //     y=text.toFloat();
+
+
+    // QString text2 = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+    //                                      tr("z:"), QLineEdit::Normal,
+    //                                      QDir::home().dirName(), &ok);
+    // if (ok && !text.isEmpty())
+    //     z=text.toFloat();
+    //get renderer
+    auto rw = dynamic_cast<Renderer*>(mVulkanWindow->getRenderWindow());
+    rw->getObjects().at(1)->setPosition(x,y,z);
 }

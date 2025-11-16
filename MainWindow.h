@@ -37,9 +37,12 @@ private:
     QAction* exitAction{ nullptr };
     std::string mSelectedName;
 
+    float x_{0},y_{0},z_{0};
+
 private slots:
     void openFile();
     void selectName();
+    void setBALLposition(float x, float y, float z);
 };
 
 #endif // HELLOVULKANWIDGET_H

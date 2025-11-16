@@ -115,7 +115,7 @@ TriangleSurface::TriangleSurface(const std::string& vertics, const std::string& 
     inn.close();
 
     std::ifstream inn2(indics);
-    if (!inn.is_open())
+    if (!inn2.is_open())
         return;
     int tr; //number of triangles
     StructIndex in;
@@ -126,7 +126,7 @@ TriangleSurface::TriangleSurface(const std::string& vertics, const std::string& 
         mIndices.push_back(in.v0);
         mIndices.push_back(in.v1);
         mIndices.push_back(in.v2);
-        //qDebug() << v.x << v.y << v.z;
+        //qDebug() << in.v0 << in.v1 << in.v2;
     }
     inn2.close();
 
@@ -190,19 +190,22 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     quad->findLeaves(&leaves);//now we store all leaves with updated average height for middle point and have a grid made of middle points
     //pushing vertices (our middle points) into mvertices for rendering and
     reorderVertices();
+    float add;
     for(QuadTree* it:leaves){
         Vertex v;
-        v.x=it->m.x();
+        v.x=it->m.x()-588400.60f; //588400.60f, 0.f, -7181100.45f
         v.y=it->m.y();
-        v.z=it->m.z();
-        v.r=1.f;
+        add=v.y/100.f;
+        v.z=it->m.z()-7181100.45f;
+        v.r=0.f;
         v.g=0.f;
         v.b=0.f;
-        v.u=0.5f;
-        v.v=0.9f;
-        //qDebug() << v.x << v.y << v.z;
+        v.u=abs(add);//0.1f+add;
+        v.v=abs(add);//3f+add;
+        //qDebug() << v.x-588400.6<< v.y << v.z-7181100.45;
         mVertices.push_back(v);
         //algorithm for mIndices.push_back(leaves[i])
+        //add+=0.1f;
     }
     triangulate(width, height);
 
