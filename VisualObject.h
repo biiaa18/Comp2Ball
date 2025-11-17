@@ -13,6 +13,9 @@ class VisualObject
 public:
     VisualObject();
 
+    QVector3D center;
+    QVector3D normal;
+
     void move(float x, float y = 0.0f, float z = 0.0f);
     void scale(float s);
     void rotate(float t, float x, float y, float z);
@@ -49,7 +52,7 @@ public:
 
     int drawType{ 0 }; // 0 = fill, 1 = line
 
-    std::vector<QVector2D> ctrl_p_flate;
+    std::vector<QVector3D> ctrl_p_flate;
     virtual float barysentriske(QVector2D vertx, float dt){return 1.f;};
     //virtual float barysentriskePoint(QVector2D vertx, Quadr){return 1.f;};
 };

@@ -18,51 +18,51 @@ TriangleSurface::TriangleSurface() : VisualObject()
     Vertex v9{ 4.0f,  3.0f,  4.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
 
     //Pushing 1st triangle,
-    // mVertices.push_back(v1);
-    // mVertices.push_back(v2);
-    // mVertices.push_back(v3);
-    // mVertices.push_back(v4);
-    // mVertices.push_back(v5);
-    // mVertices.push_back(v6);
-    // mVertices.push_back(v7);
-    // mVertices.push_back(v8);
-    // mVertices.push_back(v9);
-    // //Indexes for the two triangles to form a quad
-    // mIndices.push_back(0);
-    // mIndices.push_back(2);
-    // mIndices.push_back(3);
+    mVertices.push_back(v1);
+    mVertices.push_back(v2);
+    mVertices.push_back(v3);
+    mVertices.push_back(v4);
+    mVertices.push_back(v5);
+    mVertices.push_back(v6);
+    mVertices.push_back(v7);
+    mVertices.push_back(v8);
+    mVertices.push_back(v9);
+    //Indexes for the two triangles to form a quad
+    mIndices.push_back(0);
+    mIndices.push_back(2);
+    mIndices.push_back(3);
 
-    // mIndices.push_back(0);
-    // mIndices.push_back(1);
-    // mIndices.push_back(2);
+    mIndices.push_back(0);
+    mIndices.push_back(1);
+    mIndices.push_back(2);
 
-    // mIndices.push_back(3);
-    // mIndices.push_back(4);
-    // mIndices.push_back(5);
+    mIndices.push_back(3);
+    mIndices.push_back(4);
+    mIndices.push_back(5);
 
-    // mIndices.push_back(3);
-    // mIndices.push_back(2);
-    // mIndices.push_back(4);
+    mIndices.push_back(3);
+    mIndices.push_back(2);
+    mIndices.push_back(4);
 
-    // mIndices.push_back(1);
-    // mIndices.push_back(7);
-    // mIndices.push_back(2);
+    mIndices.push_back(1);
+    mIndices.push_back(7);
+    mIndices.push_back(2);
 
-    // mIndices.push_back(1);
-    // mIndices.push_back(6);
-    // mIndices.push_back(7);
+    mIndices.push_back(1);
+    mIndices.push_back(6);
+    mIndices.push_back(7);
 
-    // mIndices.push_back(2);
-    // mIndices.push_back(8);
-    // mIndices.push_back(4);
+    mIndices.push_back(2);
+    mIndices.push_back(8);
+    mIndices.push_back(4);
 
-    // mIndices.push_back(2);
-    // mIndices.push_back(7);
-    // mIndices.push_back(8);
+    mIndices.push_back(2);
+    mIndices.push_back(7);
+    mIndices.push_back(8);
 
     //Temporary scale and positioning
-    mMatrix.scale(0.5f);
-    mMatrix.translate(0.5f, 0.1f, 0.1f);
+    // mMatrix.scale(0.5f);
+    // mMatrix.translate(0.5f, 0.1f, 0.1f);
 }
 
 TriangleSurface::TriangleSurface(const std::string& punktsky, int drawT)
@@ -209,45 +209,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     }
     triangulate(width, height);
 
-    //----------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-    // for (Vertex& v: mVertices){
-    //     QVector2D point={v.x, v.z};
-    //     QVector2D* v_ptr;
-    //     v_ptr=&point;
-    //     QuadTree* current_quad=quad->findObject(v_ptr);
-    //     barysentriske(point,current_quad); //find which rute (small quad) is the current skypunkt
-    // }
-
-
-    //
-    // Output the triangles
-    // result = delaunayTriangulation(points);
-    // qDebug()<< "Delaunay Triangles:\n";
-    // for (const auto& tri : result) {
-
-    //     qDebug()<< "Triangle: (" << tri.a.x << ", " << tri.a.y << ") - "
-    //              << "(" << tri.b.x << ", " << tri.b.y << ") - "
-    //              << "(" << tri.c.x << ", " << tri.c.y << ")\n";
-    //     mIndices.push_back(tri.a);
-    // }
-
-    // int tr; //number of triangles
-    // StructIndex in;
-    // inn>>tr;
-    // for (auto i=0; i<tr; i++)
-    // {
-    //     inn >> in;
-    //     mIndices.push_back(in.v0);
-    //     mIndices.push_back(in.v1);
-    //     mIndices.push_back(in.v2);
-    //     //qDebug() << v.x << v.y << v.z;
-    // }
-
-
-
+    //----------------------------------------------------------------------------------------------------------------------
 }
 
 void TriangleSurface::triangulate(int width, int height)
@@ -309,112 +271,36 @@ void TriangleSurface::reorderVertices()
     // }
 }
 
-// float TriangleSurface::averageHeight(QuadTree *quadtr)
-// {
-//     float height=0;
-//     for(QVector3D* p: quadtr->VerticesInQuad){
-//         height+=p->y();
-//     }
-//     height=height/(quadtr->VerticesInQuad.size()-1);
-//     return height;
-// }
 
-// float TriangleSurface::barysentriske(QVector2D vertx, QuadTree* quad)
-// {
-//     float pointX = vertx.x();
-//     float pointZ = vertx.y();
-//     //qDebug()<<"x : "<<pointX<<" y: "<< pointZ<<"\n";
-//     //float pointZ = 0.f;
+wall::wall():VisualObject()
+{
+    Vertex v1{ 0.5f,  0.0f,  0.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
+    Vertex v2{ 0.5f,  0.0f,  100.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-right corner
+    Vertex v3{ 0.5f,  10.0f,  0.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-left corner
+    Vertex v4{ 0.5f,  10.0f,  100.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
 
+    //Pushing 1st triangle,
+    mVertices.push_back(v1);
+    mVertices.push_back(v2);
+    mVertices.push_back(v3);
 
-//     QVector2D A=quad->A;
-//     QVector2D B=quad->B;
-//     QVector2D C=quad->C;
-//         //barycentric coordinates
-//         QVector2D AB=QVector2D{B.x-A.x, B.z-A.z};
-//         QVector2D AC=QVector2D{C.x-A.x, C.z-A.z};
-//         QVector2D AP=QVector2D{pointX-A.x, pointZ-A.z};
-//         float denominator = AB.x()*AC.y() -AB.y()*AC.x();   //CROSS PRODUCT OF AB, AC
+    mVertices.push_back(v4);
+    mVertices.push_back(v3);
+    mVertices.push_back(v2);
 
+    //Indexes for the two triangles to form a quad
+    mIndices.push_back(0);
+    mIndices.push_back(1);
+    mIndices.push_back(2);
 
+    mIndices.push_back(3);
+    mIndices.push_back(2);
+    mIndices.push_back(1);
 
-//         if (denominator == 0.0f)
-//         {
-//             continue;
-//         }
-
-
-//         // QVector3D PA=QVector3D{A.x-pointX, A.y-pointZ, A.z-pointZ};
-//         // QVector3D PB=QVector3D{B.x-pointX, B.y-pointZ, B.z-pointZ};
-//         // QVector3D PC=QVector3D{C.x-pointX, C.y-pointZ, C.z-pointZ};
-
-
-//         // float lambda1 = (PB.x()*PC.z() -PB.z()*PC.x())/denominator;
-//         // float lambda2 = (PC.x()*PA.z() -PC.z()*PA.x())/denominator;
-//         // float lambda3 = (PA.x()*PB.z() -PA.z()*PB.x())/denominator;
-
-
-//         float lambda1 = (AP.x()*AC.y() -AC.x()*AP.y())/denominator;
-//         float lambda2 = (AB.x()*AP.y() -AB.y()*AP.x())/denominator;
-//         float lambda3 = 1.0f-lambda1-lambda2;
-
-//         if (lambda1 >= 0.f && lambda2 >= 0.f && lambda3 >= 0.f &&
-//             lambda1 <= 1.f && lambda2 <= 1.f && lambda3 <= 1.f)
-//         {
-//             height=lambda1 * B.y + lambda2 * C.y + lambda3 * A.y+radius;
-// }
-
-// Triangle_ TriangleSurface::getSuperTriangle(const std::vector<Point> &points) {
-//     double minX = points[0].x, minY = points[0].y;
-//     double maxX = minX, maxY = minY;
-//     for (const auto& p : points) {
-//         minX = std::min(minX, p.x);
-//         minY = std::min(minY, p.y);
-//         maxX = std::max(maxX, p.x);
-//         maxY = std::max(maxY, p.y);
-//     }
-//     double dx = maxX - minX, dy = maxY - minY;
-//     double dmax = std::max(dx, dy) * 2.0;
-//     return { {minX - dmax, minY - dmax},
-//             {minX + dmax * 2, minY - dmax},
-//             {minX + dmax, minY + dmax * 2} };
-// }
-
-// std::vector<Triangle_> TriangleSurface::delaunayTriangulation(std::vector<Point> &points) {
-//     std::vector<Triangle_> triangles;
-//     Triangle_ superTriangle = getSuperTriangle(points);
-//     triangles.push_back(superTriangle);
-//     for (const auto& p : points) {
-//         std::vector<Triangle_> badTriangles;
-//         std::vector<std::pair<Point, Point>> edges;
-//         for (const auto& tri : triangles) {
-//             if (isPointInCircumcircle(tri, p)) {
-//                 badTriangles.push_back(tri);
-//                 edges.push_back({ tri.a, tri.b });
-//                 edges.push_back({ tri.b, tri.c });
-//                 edges.push_back({ tri.c, tri.a });
-//             }
-//         }
-//         // Remove bad triangles
-//         triangles.erase(std::remove_if(triangles.begin(), triangles.end(),
-//                                        [&badTriangles](const Triangle_& t) {
-//                                            return std::find(badTriangles.begin(), badTriangles.end(), t) !=
-//                                                   badTriangles.end();
-//                                        }), triangles.end());
-//         // Reconstruct triangles
-//         for (const auto& edge : edges) {
-//             triangles.push_back({ edge.first, edge.second, p });
-//         }
-//     }
-//     // Remove super-triangle-related triangles
-//     triangles.erase(std::remove_if(triangles.begin(), triangles.end(),
-//                                    [&superTriangle](const Triangle_& t) {
-//                                        return (t.a == superTriangle.a || t.b == superTriangle.a || t.c ==
-//                                                                                                        superTriangle.a ||
-//                                                t.a == superTriangle.b || t.b == superTriangle.b || t.c ==
-//                                                                                                        superTriangle.b ||
-//                                                t.a == superTriangle.c || t.b == superTriangle.c || t.c ==
-//                                                                                                        superTriangle.c);
-//                                    }), triangles.end());
-//     return triangles;
-// }
+    float z_= abs((v2.z-v1.z)/2);
+    center={0.5f,  0.0f, 0.f};
+    QVector3D AB={v2.x-v1.x,v2.y-v1.y,v2.z-v1.z};
+    QVector3D AC={v3.x-v1.x,v3.y-v1.y,v3.z-v1.z};
+    normal=QVector3D::crossProduct(AB, AC);
+    normal.normalize();
+}

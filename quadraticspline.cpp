@@ -44,6 +44,51 @@ QuadraticSpline::QuadraticSpline(vector<QVector2D> ctrl_p_flate, int n_, int d_,
 
 }
 
+QuadraticSpline::QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_)
+{
+    drawType=1;
+    ctrl_p3D=ctrl_p_flate;
+    n=n_;
+    d=d_;
+    //adjust skjøtvektor so it interpolates through first and last points, based on amount of controll points and degree
+    skjt.resize(n+d+1); //5+2+1
+    for(int i=0;i<skjt.size();i++){
+        if(i<=d){
+            skjt[i]=0.0; //{0.0, 0.0...
+        }
+        else if (i>=n){
+            skjt[i]=float(n-d); //...3.0 ,3.0}
+        }
+        else{
+            skjt[i]=skjt[i-1]+1.0;
+        }
+        qDebug()<<skjt[i];
+    }
+
+    float t_start=skjt[d];
+    float t_end=skjt[skjt.size()-d-1];
+    float step=(t_end-t_start)/(iterations -1);
+    for(int i=0; i<iterations;i++){
+        float t_=t_start+i*step;
+        QVector3D vertx=getVertex(t_);
+        //float y=barysentriske(vertx, 0.f);
+        Vertex V;
+        V.x=vertx.x();
+        V.z=vertx.z();
+        V.y=vertx.y();
+        V.r= 0.f;
+        V.g= 0.f;
+        V.b= 1.f;
+        V.u= 0.f,
+        V.v=0.f;
+        mVertices.push_back(V);
+        //mIndices.push_back(i);
+        //qDebug()<<V.x<<" "<<V.y;        //mIndices.push_back(i);
+    }
+
+
+}
+
 QVector2D QuadraticSpline::evaluateBSplineSimple(float t)
 {
     int mi=finnSkjotVektor(t);
@@ -73,6 +118,39 @@ QVector2D QuadraticSpline::evaluateBSplineSimple(float t)
         }
     }
     return a[0];
+
+}
+
+QVector3D QuadraticSpline::getVertex(float t)
+{
+    int mi=finnSkjotVektor(t);
+    if (t == skjt.back()) return ctrl_p3D.back();
+    // if(mi<d || mi>=ctrl_p.size()){
+    //     return QVector2D(0,0);
+    // }
+    vector<QVector3D> a(d+1);  //a.resize(d+1);
+    float w;
+    for (int i=0;i<=d;i++){
+        a[d-i]=ctrl_p3D[mi-i];
+    }
+
+    for(int j=d;j>0;j--){
+        int k=mi-j;
+        for(int i=0;i<j;i++){
+            k++;
+            float denom=skjt[k+j]-skjt[k];
+            if(denom==0.f){
+                continue;
+            }
+            else{
+                w=(t-skjt[k])/denom;
+            }
+
+            a[i]=a[i]*(1-w)+a[i+1]*w; //corner cutting  (from de casteljau)
+        }
+    }
+    return a[0];
+
 
 }
 

@@ -2,6 +2,7 @@
 #define ROLLINGBALL_H
 #include "TriangleSurface.h"
 #include "oktaederclass.h"
+#include "quadraticspline.h"
 
 class RollingBall: public oktaederClass
 {
@@ -15,12 +16,16 @@ public:
     QVector3D acceleration;
     QVector3D rotation;
     float mass=0.1;
-    float radius=1;//0.1
+    float radius=0.1;//1
     const float g=9.81;
     QVector3D G={0.f,-mass*g,0.f};
     //move
     float barysentriske(QVector2D vertx, float dt) override;
     float height;
+
+    QuadraticSpline* track;
+    QVector3D wallDistance;
+    float y=wallDistance.length();
 };
 
 

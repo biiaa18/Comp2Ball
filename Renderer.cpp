@@ -5,12 +5,12 @@
 #include "VulkanWindow.h"
 #include "WorldAxis.h"
 #include "Triangle.h"
-#include "TriangleSurface.h"
+
 #include "HeightMap.h"
 #include "stb_image.h"
 #include "ObjMesh.h"
 //#include "oktaederclass.h"
-#include "rollingball.h"
+
 #include "quadraticspline.h"
 #include "quadtree.h"
 #include <QVector2D>
@@ -38,10 +38,12 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //TriangleSurface* surf=new TriangleSurface({{0.0f,1.0f,1.f},{1.f,0.0f, 0.0f}, {2.f,1.f,1.f},{3.f,0.f,0.f},{4.f,1.f,1.f}});
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
-    //TriangleSurface* surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
+    //surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
+    //surf=new TriangleSurface();
+    //mObjects.at(0)->setPosition(-2.f, 0.f, 2.f);
     //------------------------compulsory 2 cloud point----------------
-    TriangleSurface* surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
-    //TriangleSurface* surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
+    surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
+    //surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
     mObjects.push_back((surf));
     //mObjects.push_back((surf2));
     //mObjects.at(0)->setPosition(-588400.60f, 0.f, -7181100.45f); //z closer to 0, further away from me
@@ -51,12 +53,18 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //mObjects.at(0)->setPosition(0.f, -2.f, 1.f);
 
     //------------ROLLING BALL------------
-    RollingBall* ball=new RollingBall(surf);
+    ball=new RollingBall(surf);
     mObjects.push_back(ball);
-    //mObjects.at(1)->scale(0.1);
+    mObjects.at(1)->scale(0.5);
     //-------------------QUADRATIC SPLINE
     //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate));
-    //mObjects.push_back(new QuadraticSpline(mObjects.at(0)->ctrl_p_flate,mObjects.at(0)->ctrl_p_flate.size(),2, surf));
+    //mObjects.push_back(new QuadraticSpline(mObjects.at(1)->ctrl_p_flate,mObjects.at(1)->ctrl_p_flate.size(),2));
+
+
+    //--------------WALL OBSTACLE-------
+    wall_= new wall();
+    mObjects.push_back((wall_));
+    //--------------------------------
 
 
     mObjects.push_back((new WorldAxis()));
@@ -427,9 +435,26 @@ void Renderer::startNextFrame()
     mDeviceFunctions->vkCmdEndRenderPass(commandBuffer);
 
     // move ball
-    QVector2D pos={mObjects.at(1)->getPosition().x(), mObjects.at(1)->getPosition().z()};
-    mObjects.at(1)->barysentriske(pos,0.0016f);
-    
+    QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
+    ball->barysentriske(pos,0.0016f);
+    //check collision with the wall, adjust velocity and position
+    ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
+    //float left_right=ball->getPosition().x()-wall_->center.x();
+    if(abs(ballwalldistance)<=ball->radius){
+        QVector3D current_v=ball->velocity;
+        // ball->velocity-=2*(ball->velocity*wall_->normal)*wall_->normal;
+        // ball->position+=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
+        if(ballwalldistance<0){
+            //ball rolls from right
+            ball->velocity-=2*(ball->velocity*wall_->normal)*wall_->normal;
+            ball->position+=((ball->radius +ballwalldistance)/ball->radius)*current_v + (-ballwalldistance/ball->radius)*ball->velocity;
+        }
+        else{
+            //left
+            ball->velocity+=2*(ball->velocity*wall_->normal)*wall_->normal;
+            ball->position-=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
+        }
+    }
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
 }

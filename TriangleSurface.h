@@ -39,15 +39,6 @@ public:
     TriangleSurface(const std::string& vertics, const std::string& indics);
     TriangleSurface(const std::string& filename);
     // Function to check if a point is inside the circumcircle of a given triangle
-    bool isPointInCircumcircle(const Triangle_& tri, const Point& p) {
-        double ax = tri.a.x - p.x, ay = tri.a.y - p.y;
-        double bx = tri.b.x - p.x, by = tri.b.y - p.y;
-        double cx = tri.c.x - p.x, cy = tri.c.y - p.y;
-        double det = (ax * (by * (cx * cx + cy * cy) - cy * (bx * bx + by * by)) -
-                      ay * (bx * (cx * cx + cy * cy) - cx * (bx * bx + by * by)) +
-                      (ax * ax + ay * ay) * (bx * cy - by * cx));
-        return det > 0;
-    }
 
     float xmin{0}, xmax{0}, ymin{0},ymax{0};
     QuadTree* quad;
@@ -55,9 +46,6 @@ public:
     // float averageHeight(QuadTree* quadtr);
     std::vector<QuadTree*> leaves;
     std::vector<Vertex> Vertices;
-    Triangle_ getSuperTriangle(const std::vector<Point>& points);
-    // Perform Delaunay Triangulation using Bowyer-Watson algorithm
-    std::vector<Triangle_> delaunayTriangulation(std::vector<Point>& points);
     void triangulate (int width, int height);
     void reorderVertices();
 };
@@ -75,5 +63,9 @@ struct rute { //potentially use a quadtree?? and subdivide it will decide the "o
     }
 };
 
+struct wall:public VisualObject {
+    wall();
+
+};
 
 #endif // TRIANGLESURFACE_H

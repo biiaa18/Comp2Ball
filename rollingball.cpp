@@ -47,7 +47,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         if (lambda1 >= 0.f && lambda2 >= 0.f && lambda3 >= 0.f &&
             lambda1 <= 1.f && lambda2 <= 1.f && lambda3 <= 1.f)
         {
-            height=lambda1 * B.y + lambda2 * C.y + lambda3 * A.y+radius;
+            height=lambda1 * B.y + lambda2 * C.y + lambda3 * A.y+radius*1.1f;
             //break;
 
             //normal for the plane to calculate rotation and acceleration
@@ -58,17 +58,18 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             normal_v.normalize();
 
             //acceleration vector
-            //acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)}; //height from the surface?
+            acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)}; //height from the surface?
 
             //N works in the opposite direction of G
             // (G* n)*n - PROJECTION OF G on the surface normal, so it goes in the opposite direction of N
             //otherwise we can't sum it, need them to be in the same "axis" of local coordinate system
-            QVector3D Gn=QVector3D::dotProduct(G,normal_v)*normal_v;
-            //G and N "cancel" each other out, working in opposite direction
-            //have to be equal, so the ball doesnt fly off or "sink" into the ground
-            QVector3D N=-Gn; //comment
-            QVector3D F=N+G; //sum of all forces F=ma;
-            acceleration=F/mass;
+            // QVector3D Gn=QVector3D::dotProduct(G,normal_v)*normal_v;
+            // //G and N "cancel" each other out, working in opposite direction
+            // //have to be equal, so the ball doesnt fly off or "sink" into the ground
+            // QVector3D N=-Gn; //comment
+            // QVector3D F=N+G; //sum of all forces F=ma;
+            // acceleration=F/mass;
+            // acceleration.normalize();
             //update velocity and position
             velocity+=acceleration*dt; //v1=v0+a*dt
             position+=velocity*dt; //p1=p0+v*dt
@@ -81,6 +82,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
             //not sure why degree is inverted...
             rotate(degree, rotation.x(),rotation.y(), rotation.z());
+            ctrl_p_flate.push_back({getPosition().x(),getPosition().y(),getPosition().z()});
             //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
             break;
         }
@@ -90,16 +92,22 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         }
     }
 
+    // track= new QuadraticSpline(ctrl_p_flate,ctrl_p_flate.size(),2);
+
     return height;
 
 };
+
 RollingBall::RollingBall(TriangleSurface *surface) {
     triangle_surf = surface;
     //setPosition( -2.f, 3.f, 3.f);
     //setPosition( 2.f, 3.f, 2.f);
-    //setPosition( 1.f, 2.5f, 2.f); //most fun to look at
-    //setPosition( 0.f, 1.f, 4.f); //lowest point doesnt move anywhere
+    //setPosition( -1.8f, 3.f, 3.7f); //most fun to look at
+    //setPosition( 3.9f, 2.f, 3.9f); //lowest point doesnt move anywhere
     //setPosition( 0.f, 2.f, 2.f); //in the middle
-    setPosition(-70.3f, 11.3f, 100.55f);
-    //setPosition( 0.f, 0.f, 0.f);
+    //setPosition(-70.3f, 11.3f, 100.55f);
+    //setPosition(90.3f, 11.3f, 70.55f);//wall collision right
+    setPosition(-10.3f, 11.3f, 30.55f);//wall collision left
+
+
 };

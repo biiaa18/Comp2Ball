@@ -7,12 +7,17 @@
 #include "Camera.h"
 #include "VisualObject.h"
 #include "Utilities.h"
-
+#include "TriangleSurface.h"
+#include "rollingball.h"
 class Renderer : public QVulkanWindowRenderer
 {
 public:
     Renderer(QVulkanWindow *w, bool msaa = false);
 
+    float ballwalldistance;
+    TriangleSurface* surf;
+    RollingBall* ball;
+    wall* wall_;
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders
