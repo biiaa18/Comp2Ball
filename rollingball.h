@@ -23,6 +23,8 @@ public:
     float barysentriske(QVector2D vertx, float dt) override;
     float height;
 
+    int PointsCount{0};
+    int PushCount{0};
     QuadraticSpline* track;
     QVector3D wallDistance;
     float y=wallDistance.length();

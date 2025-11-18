@@ -16,6 +16,7 @@ public:
     QVector3D center;
     QVector3D normal;
 
+    bool isNotMoving=false;
     void move(float x, float y = 0.0f, float z = 0.0f);
     void scale(float s);
     void rotate(float t, float x, float y, float z);

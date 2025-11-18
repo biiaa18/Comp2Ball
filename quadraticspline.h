@@ -14,6 +14,8 @@ public:
 
     QuadraticSpline(vector<QVector2D> ctrl_p_flate, int n_, int d_, TriangleSurface* surf) ;
     QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_);
+    QuadraticSpline();
+    QuadraticSpline(float color);
     int n; //antall kontrollpunkter
     int d; //grad
     int iterations=100;
@@ -31,5 +33,6 @@ public:
     float height;
     float barysentriske(QVector2D vertx, float dt)override;
 };
+
 
 #endif // QUADRATICSPLINE_H

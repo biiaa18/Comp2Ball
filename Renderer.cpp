@@ -11,7 +11,6 @@
 #include "ObjMesh.h"
 //#include "oktaederclass.h"
 
-#include "quadraticspline.h"
 #include "quadtree.h"
 #include <QVector2D>
 /*** Renderer class ***/
@@ -39,10 +38,10 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
     //surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
-    //surf=new TriangleSurface();
+    surf=new TriangleSurface();
     //mObjects.at(0)->setPosition(-2.f, 0.f, 2.f);
     //------------------------compulsory 2 cloud point----------------
-    surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
+    //surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
     //surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
     mObjects.push_back((surf));
     //mObjects.push_back((surf2));
@@ -67,6 +66,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //--------------------------------
 
 
+    track=new QuadraticSpline(0.5f);
+    mObjects.push_back(track);
     mObjects.push_back((new WorldAxis()));
 
     //mObjects.at(0)->rotate(-45.f, 1.f, 0.f,0.f);
@@ -437,6 +438,12 @@ void Renderer::startNextFrame()
     // move ball
     QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
     ball->barysentriske(pos,0.0016f);
+    if(ball->isNotMoving){
+        //track= new QuadraticSpline(ball->ctrl_p_flate,ball->ctrl_p_flate.size(),2);
+        track=new QuadraticSpline();
+        mObjects.push_back(track);
+        //ball->isNotMoving=false;
+    }
     //check collision with the wall, adjust velocity and position
     ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
     //float left_right=ball->getPosition().x()-wall_->center.x();

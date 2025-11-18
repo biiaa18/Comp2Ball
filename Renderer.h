@@ -9,6 +9,7 @@
 #include "Utilities.h"
 #include "TriangleSurface.h"
 #include "rollingball.h"
+#include "quadraticspline.h"
 class Renderer : public QVulkanWindowRenderer
 {
 public:
@@ -18,6 +19,7 @@ public:
     TriangleSurface* surf;
     RollingBall* ball;
     wall* wall_;
+    QuadraticSpline* track;
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders

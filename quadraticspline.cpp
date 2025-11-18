@@ -44,7 +44,7 @@ QuadraticSpline::QuadraticSpline(vector<QVector2D> ctrl_p_flate, int n_, int d_,
 
 }
 
-QuadraticSpline::QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_)
+QuadraticSpline::QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_): VisualObject()
 {
     drawType=1;
     ctrl_p3D=ctrl_p_flate;
@@ -75,18 +75,36 @@ QuadraticSpline::QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_)
         Vertex V;
         V.x=vertx.x();
         V.z=vertx.z();
-        V.y=vertx.y();
+        V.y=-(vertx.y()+3.f);
         V.r= 0.f;
-        V.g= 0.f;
-        V.b= 1.f;
+        V.g= 1.f;
+        V.b= 0.f;
         V.u= 0.f,
         V.v=0.f;
         mVertices.push_back(V);
         //mIndices.push_back(i);
-        //qDebug()<<V.x<<" "<<V.y;        //mIndices.push_back(i);
+        qDebug()<<"spline x, height and y  "<<V.x<<" "<<V.y<<" "<<V.z<<"\n";        //mIndices.push_back(i);
     }
 
 
+}
+
+QuadraticSpline::QuadraticSpline(): VisualObject()
+{
+    drawType=1;
+    Vertex v1{ 4.0f,  -5.5f,  4.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
+    Vertex v2{ 0.0f,  -5.5f,  0.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f };
+    mVertices.push_back(v1);
+    mVertices.push_back(v2);
+}
+
+QuadraticSpline::QuadraticSpline(float color):VisualObject()
+{
+    drawType=1;
+    Vertex v1{ 4.0f,  -5.5f,  4.0f,   0.f, 0.0f, color,  0.0f, 0.0f};  //  bottom-left corner
+    Vertex v2{ 0.0f,  -5.5f,  0.0f,   1.0f, 0.0f, color,  1.0f, 0.0f };
+    mVertices.push_back(v1);
+    mVertices.push_back(v2);
 }
 
 QVector2D QuadraticSpline::evaluateBSplineSimple(float t)

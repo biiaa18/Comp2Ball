@@ -44,9 +44,12 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         float lambda2 = (AB.x()*AP.y() -AB.y()*AP.x())/denominator;
         float lambda3 = 1.0f-lambda1-lambda2;
 
+
         if (lambda1 >= 0.f && lambda2 >= 0.f && lambda3 >= 0.f &&
             lambda1 <= 1.f && lambda2 <= 1.f && lambda3 <= 1.f)
         {
+
+            PointsCount+=1;
             height=lambda1 * B.y + lambda2 * C.y + lambda3 * A.y+radius*1.1f;
             //break;
 
@@ -82,7 +85,20 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
             //not sure why degree is inverted...
             rotate(degree, rotation.x(),rotation.y(), rotation.z());
-            ctrl_p_flate.push_back({getPosition().x(),getPosition().y(),getPosition().z()});
+            if(PointsCount>12 && PushCount<10){
+                //push every 10th point
+                ctrl_p_flate.push_back({getPosition().x(),getPosition().y(),getPosition().z()});
+                PointsCount=0;
+                PushCount+=1;
+            }
+            if(PushCount==10){//(PointsCount==11){
+                isNotMoving=true;
+                PushCount=11;
+            }
+            else{
+                isNotMoving=false;
+            }
+
             //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
             break;
         }
@@ -91,8 +107,6 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
                 //qDebug("not inside triangle of  triangle_surf");
         }
     }
-
-    // track= new QuadraticSpline(ctrl_p_flate,ctrl_p_flate.size(),2);
 
     return height;
 
@@ -103,11 +117,10 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     //setPosition( -2.f, 3.f, 3.f);
     //setPosition( 2.f, 3.f, 2.f);
     //setPosition( -1.8f, 3.f, 3.7f); //most fun to look at
-    //setPosition( 3.9f, 2.f, 3.9f); //lowest point doesnt move anywhere
+    setPosition( 3.9f, 2.f, 3.9f); //lowest point doesnt move anywhere
     //setPosition( 0.f, 2.f, 2.f); //in the middle
     //setPosition(-70.3f, 11.3f, 100.55f);
     //setPosition(90.3f, 11.3f, 70.55f);//wall collision right
-    setPosition(-10.3f, 11.3f, 30.55f);//wall collision left
-
+    //setPosition(-10.3f, 11.3f, 30.55f);//wall collision left
 
 };
