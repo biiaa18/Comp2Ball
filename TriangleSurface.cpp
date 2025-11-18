@@ -7,15 +7,15 @@ TriangleSurface::TriangleSurface() : VisualObject()
 
     Vertex v1{ 0.0f,  3.0f,  0.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
     Vertex v2{ 2.0f,  2.0f,  0.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-right corner
-    Vertex v3{ 2.0f,  1.0f,  2.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-left corner
-    Vertex v4{ 0.0f,  2.0f,  2.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
+    Vertex v3{ 2.0f,  1.0f,  -2.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-left corner
+    Vertex v4{ 0.0f,  2.0f,  -2.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
 
-    Vertex v5{ 2.0f,  3.0f,  4.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
-    Vertex v6{ 0.0f,  3.0f,  4.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-right corner
+    Vertex v5{ 2.0f,  3.0f,  -4.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
+    Vertex v6{ 0.0f,  3.0f,  -4.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-right corner
     Vertex v7{ 4.0f,  3.0f,  0.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-left corner
-    Vertex v8{ 4.0f,  2.0f,  2.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
+    Vertex v8{ 4.0f,  2.0f,  -2.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
 
-    Vertex v9{ 4.0f,  3.0f,  4.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
+    Vertex v9{ 4.0f,  3.0f,  -4.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
 
     //Pushing 1st triangle,
     mVertices.push_back(v1);
@@ -274,10 +274,10 @@ void TriangleSurface::reorderVertices()
 
 wall::wall():VisualObject()
 {
-    Vertex v1{ 0.5f,  0.0f,  0.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-left corner
-    Vertex v2{ 0.5f,  0.0f,  100.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-right corner
-    Vertex v3{ 0.5f,  10.0f,  0.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-left corner
-    Vertex v4{ 0.5f,  10.0f,  100.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-right corner
+    Vertex v1{ 0.5f,  0.0f,  50.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-right corner
+    Vertex v2{ 0.5f,  0.0f,  100.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-left corner
+    Vertex v3{ 0.5f,  10.0f,  50.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-right corner
+    Vertex v4{ 0.5f,  10.0f,  100.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-left corner
 
     //Pushing 1st triangle,
     mVertices.push_back(v1);

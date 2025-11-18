@@ -25,6 +25,7 @@ public:
 
     int PointsCount{0};
     int PushCount{0};
+    float dtime{0};
     QuadraticSpline* track;
     QVector3D wallDistance;
     float y=wallDistance.length();

@@ -74,6 +74,8 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             // acceleration=F/mass;
             // acceleration.normalize();
             //update velocity and position
+
+            float previous_velocity=velocity.length();
             velocity+=acceleration*dt; //v1=v0+a*dt
             position+=velocity*dt; //p1=p0+v*dt
             setPosition(getPosition().x()+position.x(), height, getPosition().z()+position.z());
@@ -85,19 +87,28 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
             //not sure why degree is inverted...
             rotate(degree, rotation.x(),rotation.y(), rotation.z());
-            if(PointsCount>12 && PushCount<10){
+            if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinished){
                 //push every 10th point
-                ctrl_p_flate.push_back({getPosition().x(),getPosition().y(),getPosition().z()});
+                ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y()-radius,getPosition().z()-radius});
                 PointsCount=0;
-                PushCount+=1;
+                //PushCount+=1;
+                qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
-            if(PushCount==10){//(PointsCount==11){
-                isNotMoving=true;
-                PushCount=11;
+            if(!isFinished && abs(velocity.length()-previous_velocity)<0.00001 || !isFinished && velocity.length()==previous_velocity){//(PointsCount==11){
+                dtime+=dt;
+                if(dtime>1.0f){
+                    isNotMoving=true;
+                    isFinished=true;
+                }
+                else{
+                    dtime=0.f;
+                    isNotMoving=false;
+                }
             }
-            else{
+            else {
                 isNotMoving=false;
             }
+
 
             //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
             break;
@@ -114,13 +125,13 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 
 RollingBall::RollingBall(TriangleSurface *surface) {
     triangle_surf = surface;
-    //setPosition( -2.f, 3.f, 3.f);
-    //setPosition( 2.f, 3.f, 2.f);
-    //setPosition( -1.8f, 3.f, 3.7f); //most fun to look at
-    setPosition( 3.9f, 2.f, 3.9f); //lowest point doesnt move anywhere
-    //setPosition( 0.f, 2.f, 2.f); //in the middle
-    //setPosition(-70.3f, 11.3f, 100.55f);
-    //setPosition(90.3f, 11.3f, 70.55f);//wall collision right
-    //setPosition(-10.3f, 11.3f, 30.55f);//wall collision left
+    //setPosition( -2.f, 3.f, -3.f);
+    //setPosition( 2.f, 3.f, -2.f);
+    //setPosition( -1.8f, 3.f, -3.7f); //most fun to look at
+    //setPosition( 3.9f, 2.f, -1.9f); //lowest point doesnt move anywhere
+    //setPosition( 2.f, 2.1f, -1.9f); //in the middle
+    //setPosition(-70.3f, 11.3f, -100.55f);
+    //setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
+    setPosition(40.3f, 11.3f, 50.55f);//wall collision right
 
 };

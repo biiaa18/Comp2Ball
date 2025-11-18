@@ -38,10 +38,10 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
     //surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
-    surf=new TriangleSurface();
+    //surf=new TriangleSurface();
     //mObjects.at(0)->setPosition(-2.f, 0.f, 2.f);
     //------------------------compulsory 2 cloud point----------------
-    //surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
+    surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
     //surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
     mObjects.push_back((surf));
     //mObjects.push_back((surf2));
@@ -66,8 +66,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //--------------------------------
 
 
-    track=new QuadraticSpline(0.5f);
-    mObjects.push_back(track);
+    //track=new QuadraticSpline(0.5f);
+    //mObjects.push_back(track);
     mObjects.push_back((new WorldAxis()));
 
     //mObjects.at(0)->rotate(-45.f, 1.f, 0.f,0.f);
@@ -101,8 +101,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
  //        mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
 
 	//Inital position of the camera
-    mCamera.setPosition(QVector3D(-1.f, 30.0, 5.f)); //x+ left, z+ to me
-    mCamera.pitch(258);
+    mCamera.setPosition(QVector3D(-1.f, -30.0, -5.f)); //x+ left, z+ to me
+    mCamera.pitch(82);
     //mCamera.setPosition(QVector3D(61.9f, -15.71283f, -150.45f));
     //Need access to our VulkanWindow so making a convenience pointer
     mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
@@ -406,6 +406,23 @@ void Renderer::startNextFrame()
 
     setViewProjectionMatrix();   //Update the view and projection matrix in the Uniform
 
+    if(ball->isNotMoving){
+        track= new QuadraticSpline(ball->ctrl_p_flate,ball->ctrl_p_flate.size(),2);
+        //track=new QuadraticSpline();
+        dynamic_cast<Renderer*>(this)->mObjects.push_back(track);
+        VkDevice logicalDevice = mWindow->device();
+        mDeviceFunctions = mWindow->vulkanInstance()->deviceFunctions(logicalDevice);
+
+        // Initialize the graphics queue
+        uint32_t graphicsQueueFamilyIndex = mWindow->graphicsQueueFamilyIndex();
+        mDeviceFunctions->vkGetDeviceQueue(logicalDevice, graphicsQueueFamilyIndex, 0, &mGraphicsQueue);
+
+        // const int concurrentFrameCount = mWindow->concurrentFrameCount(); // 2 on Oles Machine
+        const VkPhysicalDeviceLimits *pdevLimits = &mWindow->physicalDeviceProperties()->limits;
+        const VkDeviceSize uniAlign = pdevLimits->minUniformBufferOffsetAlignment;
+        createVertexBuffer(uniAlign,track);
+        //ball->isNotMoving=false;
+    }
     /********************************* Our draw call!: *********************************/
     for (std::vector<VisualObject*>::iterator it=mObjects.begin(); it!=mObjects.end(); it++)
     {
@@ -414,6 +431,7 @@ void Renderer::startNextFrame()
             mDeviceFunctions->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline1); //mPipeline1
 		else
 			mDeviceFunctions->vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mColorMaterial.pipeline);
+            //qDebug()<<" vertx size"<<(*it)->getVertices().size()<<"\n";
 
         QMatrix4x4 mvp = mCamera.projectionMatrix() * mCamera.viewMatrix() * (*it)->getMatrix();
         setModelMatrix((*it)->getMatrix()); //mvp);
@@ -438,29 +456,30 @@ void Renderer::startNextFrame()
     // move ball
     QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
     ball->barysentriske(pos,0.0016f);
-    if(ball->isNotMoving){
-        //track= new QuadraticSpline(ball->ctrl_p_flate,ball->ctrl_p_flate.size(),2);
-        track=new QuadraticSpline();
-        mObjects.push_back(track);
-        //ball->isNotMoving=false;
-    }
+    // if(ball->isNotMoving){
+    //     //track= new QuadraticSpline(ball->ctrl_p_flate,ball->ctrl_p_flate.size(),2);
+    //     track=new QuadraticSpline();
+    //     mObjects.push_back(track);
+    //     //ball->isNotMoving=false;
+    // }
     //check collision with the wall, adjust velocity and position
     ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
+    //ballwalldistance=((ball->getPosition()-wall_->center)*(wall_->normal)).length();
     //float left_right=ball->getPosition().x()-wall_->center.x();
     if(abs(ballwalldistance)<=ball->radius){
         QVector3D current_v=ball->velocity;
-        // ball->velocity-=2*(ball->velocity*wall_->normal)*wall_->normal;
-        // ball->position+=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
-        if(ballwalldistance<0){
-            //ball rolls from right
-            ball->velocity-=2*(ball->velocity*wall_->normal)*wall_->normal;
-            ball->position+=((ball->radius +ballwalldistance)/ball->radius)*current_v + (-ballwalldistance/ball->radius)*ball->velocity;
-        }
-        else{
-            //left
-            ball->velocity+=2*(ball->velocity*wall_->normal)*wall_->normal;
-            ball->position-=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
-        }
+        ball->velocity-=2*(QVector3D::dotProduct(ball->velocity,wall_->normal))*wall_->normal;
+        ball->position+=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
+        // if(ballwalldistance<0){
+        //     //ball rolls from right
+        //     ball->velocity-=2*(ball->velocity*wall_->normal)*wall_->normal;
+        //     ball->position+=((ball->radius +ballwalldistance)/ball->radius)*current_v + (-ballwalldistance/ball->radius)*ball->velocity;
+        // }
+        // else{
+        //     //left
+        //     ball->velocity+=2*(ball->velocity*wall_->normal)*wall_->normal;
+        //     ball->position-=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
+        // }
     }
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

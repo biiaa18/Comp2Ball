@@ -63,12 +63,12 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     //    You get the keyboard input like this
     if(event->key() == Qt::Key_W)
     {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(-5.f);
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(5.f);
         mInput.W = true;
     }
     if(event->key() == Qt::Key_S)
     {
-         dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(5.f);
+         dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(-5.f);
         mInput.S = true;
     }
     if(event->key() == Qt::Key_D)
@@ -101,12 +101,12 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     }
     if(event->key() == Qt::Key_Up)
     {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(5.f);
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(-5.f);
         mInput.UP = true;
     }
     if(event->key() == Qt::Key_Down)
     {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(-5.f);
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(5.f);
         mInput.DOWN = true;
     }
     if(event->key() == Qt::Key_Left)
