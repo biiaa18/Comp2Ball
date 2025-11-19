@@ -21,7 +21,8 @@ public:
     wall* wall_;
     QuadraticSpline* track;
     float timerSpawn{0.f};
-    void spawnBalls(VisualObject* ball);
+    void spawnBalls(VisualObject* ball_);
+    void makeFluidBSpline(VisualObject* ball_);
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders
