@@ -16,7 +16,9 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         Vertex A = triangle_surf->mVertices[triangle_surf->mIndices[i]];
         Vertex B = triangle_surf->mVertices[triangle_surf->mIndices[i + 1]];
         Vertex C = triangle_surf->mVertices[triangle_surf->mIndices[i + 2]];
-        //qDebug()<<"x "<<A.x<<" "<<B.x<<" "<<C.z<<" y:"<<A.z<<" "<<B.z<<" "<<C.z<<"\n";        //barycentric coordinates
+        //qDebug()<<"index 0 "<<A.x<<" index 1  "<<B.x<<" "<<C.z<<" y:"<<A.z<<" "<<B.z<<" "<<C.z<<"\n";        //barycentric coordinates
+        //qDebug()<<"index 0 "<<triangle_surf->mIndices[i]<<" index 1  "<<triangle_surf->mIndices[i + 1]<<" index 2 "<<triangle_surf->mIndices[i + 2]<<"\n";
+
         QVector2D AB=QVector2D{B.x-A.x, B.z-A.z};
         QVector2D AC=QVector2D{C.x-A.x, C.z-A.z};
         QVector2D AP=QVector2D{ballX-A.x, ballZ-A.z};
@@ -94,18 +96,21 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
                 //PushCount+=1;
                 qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
-            if(!isFinished && abs(velocity.length()-previous_velocity)<0.00001 || !isFinished && velocity.length()==previous_velocity){//(PointsCount==11){
-                dtime+=dt;
-                if(dtime>1.0f){
-                    isNotMoving=true;
-                    isFinished=true;
+            if(!isFinished){
+                if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity){
+                    dtime+=dt;
+                    qDebug()<<dtime;
+                    if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
+                        isNotMoving=true;
+                        isFinished=true;
+                    }
                 }
-                else{
+                else{ //ball is moving
                     dtime=0.f;
                     isNotMoving=false;
                 }
             }
-            else {
+            else { //of ball stopped moving, put isNotmoving back to false, so we dont create more than 1 b spline
                 isNotMoving=false;
             }
 
