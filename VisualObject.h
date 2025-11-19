@@ -13,11 +13,19 @@ class VisualObject
 public:
     VisualObject();
 
+    //ball
+    float radius=0.1;//1
+    QVector3D position{0.f,0.f,0.f};//{40.3f, 11.3f, 50.55f};
+    QVector3D velocity={0.f, 0.f, 0.f};
+    //wall
     QVector3D center;
     QVector3D normal;
-
+    //fluid & ball
+    bool isBall=false;
     bool isNotMoving=false;
-    bool isFinished=false;
+    bool isFinishedMoving=false;
+    bool isActive=false;//use this as active flag for object pooling for fluid simulation
+
     void move(float x, float y = 0.0f, float z = 0.0f);
     void scale(float s);
     void rotate(float t, float x, float y, float z);

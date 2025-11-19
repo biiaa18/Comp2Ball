@@ -11,12 +11,12 @@ public:
     RollingBall(TriangleSurface *surface);
     TriangleSurface* triangle_surf; //using barycentric
     //need to get normal vector from the suface for calculating acceleration vector
-    QVector3D position;
-    QVector3D velocity={0.f, 0.f, 0.f};
-    QVector3D acceleration;
-    QVector3D rotation;
+    // QVector3D position{0.f,0.f,0.f};//{40.3f, 11.3f, 50.55f};
+    // QVector3D velocity={0.f, 0.f, 0.f};
+    QVector3D acceleration{0.f,0.f,0.f};
+    QVector3D rotation{0.f,0.f,0.f};
     float mass=0.1;
-    float radius=0.1;//1
+    // float radius=0.1;//1
     const float g=9.81;
     QVector3D G={0.f,-mass*g,0.f};
     //move
@@ -24,9 +24,7 @@ public:
     float height;
 
     int PointsCount{0};
-    int PushCount{0};
     float dtime{0};
-    QuadraticSpline* track;
     QVector3D wallDistance;
     float y=wallDistance.length();
 };

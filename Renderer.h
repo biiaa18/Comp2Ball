@@ -20,6 +20,8 @@ public:
     RollingBall* ball;
     wall* wall_;
     QuadraticSpline* track;
+    float timerSpawn{0.f};
+    void spawnBalls(VisualObject* ball);
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders
@@ -85,7 +87,8 @@ protected:
 
 private:
     friend class VulkanWindow;
-	std::vector<VisualObject*> mObjects;    //All objects in the program  
+    std::vector<VisualObject*> mObjects;    //All objects in the program
+    std::vector<VisualObject*> mBalls;    //for fluid simulation
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
 
 	//Start of Uniforms and DescriptorSets
@@ -129,6 +132,9 @@ private:
 		//VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };    //also should have had a spesific pipeline layout
         VkPipeline pipeline{ VK_NULL_HANDLE };
     } mColorMaterial;
+
+
+    void activateBalls(float dt);
 };
 
 #endif // RENDERER_H

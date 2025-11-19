@@ -89,20 +89,19 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
             //not sure why degree is inverted...
             rotate(degree, rotation.x(),rotation.y(), rotation.z());
-            if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinished){
+            if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
                 //push every 10th point
                 ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y()-radius,getPosition().z()-radius});
                 PointsCount=0;
-                //PushCount+=1;
-                qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
+                //qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
-            if(!isFinished){
+            if(!isFinishedMoving){
                 if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity){
                     dtime+=dt;
-                    qDebug()<<dtime;
+                    //qDebug()<<dtime;
                     if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
                         isNotMoving=true;
-                        isFinished=true;
+                        isFinishedMoving=true;
                     }
                 }
                 else{ //ball is moving
@@ -129,6 +128,8 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 };
 
 RollingBall::RollingBall(TriangleSurface *surface) {
+    drawType=0;
+    isBall=true;
     triangle_surf = surface;
     //setPosition( -2.f, 3.f, -3.f);
     //setPosition( 2.f, 3.f, -2.f);
@@ -138,5 +139,5 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     //setPosition(-70.3f, 11.3f, -100.55f);
     //setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
     setPosition(40.3f, 11.3f, 50.55f);//wall collision right
-
+    scale(0.5);
 };
