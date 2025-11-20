@@ -302,5 +302,5 @@ wall::wall():VisualObject()
     QVector3D AB={v2.x-v1.x,v2.y-v1.y,v2.z-v1.z};
     QVector3D AC={v3.x-v1.x,v3.y-v1.y,v3.z-v1.z};
     normal=QVector3D::crossProduct(AB, AC);
-    normal.normalize();
+    normal=normal.normalized();
 }

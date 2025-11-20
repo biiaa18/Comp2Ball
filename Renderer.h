@@ -15,6 +15,7 @@ class Renderer : public QVulkanWindowRenderer
 public:
     Renderer(QVulkanWindow *w, bool msaa = false);
 
+    bool FluidBSplineExists=false;
     float ballwalldistance;
     TriangleSurface* surf;
     RollingBall* ball;

@@ -16,7 +16,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         Vertex A = triangle_surf->mVertices[triangle_surf->mIndices[i]];
         Vertex B = triangle_surf->mVertices[triangle_surf->mIndices[i + 1]];
         Vertex C = triangle_surf->mVertices[triangle_surf->mIndices[i + 2]];
-        //qDebug()<<"index 0 "<<A.x<<" index 1  "<<B.x<<" "<<C.z<<" y:"<<A.z<<" "<<B.z<<" "<<C.z<<"\n";        //barycentric coordinates
+        //qDebug()<<"A ("<<A.x<<" "<<A.z<<" )   B ("<<B.x<<" "<<B.z<<")   C ("<<C.x<<" "<<C.z<<")\n";        //barycentric coordinates
         //qDebug()<<"index 0 "<<triangle_surf->mIndices[i]<<" index 1  "<<triangle_surf->mIndices[i + 1]<<" index 2 "<<triangle_surf->mIndices[i + 2]<<"\n";
 
         QVector2D AB=QVector2D{B.x-A.x, B.z-A.z};
@@ -59,39 +59,49 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             //normal vector of surface calculations
             QVector3D AB_=QVector3D{B.x-A.x, B.y-A.y, B.z-A.z};
             QVector3D AC_=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
-            QVector3D normal_v =QVector3D::crossProduct(AB_, AC_);    //CROSS PRODUCT OF AB, AC
+            QVector3D normal_v =QVector3D::crossProduct(AB_, AC_);    //CROSS PRODUCT OF AB, AC TO FIND NORMAL VECTOR
             normal_v.normalize();
+            //qDebug()<<"normal vector "<<normal_v.x()<<" "<<normal_v.y()<<" "<<normal_v.z()<<" \n";
 
+            //float friction=0.7f;
             //acceleration vector
-            acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)}; //height from the surface?
+            //acceleration={g*normal_v.x()*normal_v.y()*(1-friction), g*normal_v.z()*normal_v.y()*(1-friction), g*((1-friction)*(normal_v.y()*normal_v.y())-1)};
+            acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)};
+            // qDebug()<<"acceleration "<<acceleration.x()<<" "<<acceleration.y()<<" "<<acceleration.z()<<" \n";
 
+            //ACCELERATION WITH FORCES
             //N works in the opposite direction of G
             // (G* n)*n - PROJECTION OF G on the surface normal, so it goes in the opposite direction of N
             //otherwise we can't sum it, need them to be in the same "axis" of local coordinate system
             // QVector3D Gn=QVector3D::dotProduct(G,normal_v)*normal_v;
             // //G and N "cancel" each other out, working in opposite direction
             // //have to be equal, so the ball doesnt fly off or "sink" into the ground
-            // QVector3D N=-Gn; //comment
-            // QVector3D F=N+G; //sum of all forces F=ma;
+            // QVector3D N=-Gn;
+            // //QVector3D R
+            // //QVector3D Ff=friction*N;
+            // QVector3D F=N+G; //+Ff; //sum of all forces F=ma;
             // acceleration=F/mass;
-            // acceleration.normalize();
-            //update velocity and position
+            // qDebug()<<"acceleration with forces "<<a.x()<<" "<<a.y()<<" "<<a.z()<<" \n";
 
-            float previous_velocity=velocity.length();
+
+
+            //update velocity and position
+            float previous_velocity=velocity.length(); //need this to compare to updated velocity to define that ball has stopped moving.
             velocity+=acceleration*dt; //v1=v0+a*dt
             position+=velocity*dt; //p1=p0+v*dt
             setPosition(getPosition().x()+position.x(), height, getPosition().z()+position.z());
-            //setPosition(position.x(), height, position.z());
+            //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
 
             //rotation
-            rotation=QVector3D::crossProduct(normal_v,velocity)/radius;
+            rotation=QVector3D::crossProduct(normal_v,velocity);//radius; //9.11 (added radius so match the ball size)
             rotation.normalize();
-            float degree=qRadiansToDegrees(position.length()/radius);//qRadiansToDegrees(rotation.length())*dt;
-            //not sure why degree is inverted...
+            float degree=qRadiansToDegrees(position.length()/radius);//position is translation and angle= based on 9.10
             rotate(degree, rotation.x(),rotation.y(), rotation.z());
+
+            //check if ball stopped moving for drawing b spline track
             if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
                 //push every 10th point
-                ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y()-radius,getPosition().z()-radius});
+                ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y(),getPosition().z()-radius});
                 PointsCount=0;
                 //qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
@@ -111,6 +121,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             }
             else { //of ball stopped moving, put isNotmoving back to false, so we dont create more than 1 b spline
                 isNotMoving=false;
+
             }
 
 
@@ -134,10 +145,15 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     //setPosition( -2.f, 3.f, -3.f);
     //setPosition( 2.f, 3.f, -2.f);
     //setPosition( -1.8f, 3.f, -3.7f); //most fun to look at
-    //setPosition( 3.9f, 2.f, -1.9f); //lowest point doesnt move anywhere
+
+    //-----checking with 9.10.9
+    //setPosition( 4.0f, 3.f, 0.f); // point C
+    //setPosition( 3.9f, 3.f, -0.1f);
+
+
     //setPosition( 2.f, 2.1f, -1.9f); //in the middle
     //setPosition(-70.3f, 11.3f, -100.55f);
-    //setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
-    setPosition(40.3f, 11.3f, 50.55f);//wall collision right
+    setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
+    //setPosition(40.3f, 11.3f, 50.55f);//wall collision right
     scale(0.5);
 };
