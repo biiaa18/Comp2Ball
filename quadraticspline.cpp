@@ -18,7 +18,7 @@ QuadraticSpline::QuadraticSpline(vector<QVector2D> ctrl_p_flate, int n_, int d_,
         else{
             skjt[i]=skjt[i-1]+1.0;
         }
-        qDebug()<<skjt[i];
+        //qDebug()<<skjt[i];
     }
 
     float t_start=skjt[d];
@@ -62,7 +62,7 @@ QuadraticSpline::QuadraticSpline(vector<QVector3D> ctrl_p_flate, int n_, int d_)
         else{
             skjt[i]=skjt[i-1]+1.0;
         }
-        qDebug()<<skjt[i];
+        //qDebug()<<skjt[i];
     }
 
     float t_start=skjt[d];

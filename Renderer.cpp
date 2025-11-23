@@ -53,12 +53,12 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //mObjects.at(0)->setPosition(0.f, -2.f, 1.f);
 
     //------------ROLLING BALL------------
-    ball=new RollingBall(surf);
-    ball->isActive=true;
-    mObjects.push_back(ball);
+    // ball=new RollingBall(surf);
+    // ball->isActive=true;
+    // mObjects.push_back(ball);
     //mObjects.at(1)->scale(0.5);
 
-    int ballsAmount=50;
+    int ballsAmount=500;  //5000
     for(int i=0;i<ballsAmount;i++){
         mObjects.push_back(new RollingBall(surf)); //all are inactive -  isActive=false
     }
@@ -122,52 +122,43 @@ void Renderer::spawnBalls(VisualObject *ball_)
 {
     if(ball_->isFinishedMoving){
         ball_->isActive=false;
-        ball->madeBSpline=true;
+        //qDebug()<<" stopped ------------------------stopped----------------------";
+        //ball_->madeBSpline=true;
+        return;
     }
-    else{
-        QVector2D pos={ball_->getPosition().x(), ball_->getPosition().z()};
-        ball_->barysentriske(pos,0.0016f);
+    ballwalldistance=QVector3D::dotProduct({ball_->getPosition()-wall_->center},wall_->normal);
+    //qDebug()<<ballwalldistance<<"\n";
+    //ballwalldistance=((ball_->getPosition()-wall_->center)*(wall_->normal)).length();
+    if(fabs(ballwalldistance)<=(ball_->radius)+0.01){
+        //qDebug()<<"             WALL!!\n";
+        QVector3D current_v=ball_->velocity;
+        ball_->velocity=-2*(QVector3D::dotProduct(current_v,wall_->normal))*wall_->normal;
+        //ball_->velocity=current_v-2*(QVector3D::dotProduct(ball_->velocity,wall_->normal))*wall_->normal;
+        ball_->position+=((ball_->radius -ballwalldistance)/ball_->radius)*current_v + (ballwalldistance/ball_->radius)*ball_->velocity;
+        ball_->setPosition(ball_->getPosition().x()+ball_->position.x(), ball_->getPosition().y()+ball_->position.y(), ball_->getPosition().z()+ball_->position.z());
+        //ball_->position+=(ball_->radius -ballwalldistance)*wall_->normal; // + (ballwalldistance/ball_->radius)*ball_->velocity;
+    }
 
-        ballwalldistance=QVector3D::dotProduct({ball_->getPosition()-wall_->center},wall_->normal);
-        //ballwalldistance=((ball_->getPosition()-wall_->center)*(wall_->normal)).length();
-        if(fabs(ballwalldistance)<=ball_->radius){
-            QVector3D current_v=ball_->velocity;
-            ball_->velocity=current_v-2*(QVector3D::dotProduct(ball_->velocity,wall_->normal))*wall_->normal;
-            ball_->position+=((ball_->radius -ballwalldistance)/ball_->radius)*current_v + (ballwalldistance/ball_->radius)*ball_->velocity;
-        }
-        //qDebug()<<"im rolling-----------------------------------rolling--------------------";
-    }
+    QVector2D pos={ball_->getPosition().x(), ball_->getPosition().z()};
+    //velocity=0?
+    ball_->barysentriske(pos,0.0016f);
+    //qDebug()<<"im rolling-----------------------------------rolling--------------------";
 }
 
 void Renderer::makeFluidBSpline(VisualObject *ball_)
 {
-    if (FluidBSplineExists){
-        return;
-    }
-    // if(ball_->isFinishedMoving){
-    //     ball_->isActive=false;
-    //     ball->madeBSpline=true;
+    // if (FluidBSplineExists){
+    //     return;
     // }
+
     if(ball_->isNotMoving && !ball_->madeBSpline){
-        //ball_->isActive=false;
-        //ball_->setPosition(40.3f, 11.3f, 50.55f);
         track= new QuadraticSpline(ball_->ctrl_p_flate,ball_->ctrl_p_flate.size(),2);
         track->isActive=true;
-        qDebug()<<"                             making b spline";
-        mObjects.push_back(track);
-        VkDevice logicalDevice = mWindow->device();
-        mDeviceFunctions = mWindow->vulkanInstance()->deviceFunctions(logicalDevice);
-
-         // Initialize the graphics queue
-         uint32_t graphicsQueueFamilyIndex = mWindow->graphicsQueueFamilyIndex();
-         mDeviceFunctions->vkGetDeviceQueue(logicalDevice, graphicsQueueFamilyIndex, 0, &mGraphicsQueue);
-
-         // const int concurrentFrameCount = mWindow->concurrentFrameCount(); // 2 on Oles Machine
-        const VkPhysicalDeviceLimits *pdevLimits = &mWindow->physicalDeviceProperties()->limits;
-        const VkDeviceSize uniAlign = pdevLimits->minUniformBufferOffsetAlignment;
-        createVertexBuffer(uniAlign,track);
-        ball->madeBSpline=true;
-        FluidBSplineExists=true;
+        //qDebug()<<"                             making b spline";
+        mBalls.push_back(track);
+        ball_->madeBSpline=true;
+        // FluidBSplineExists=true;
+        //ball_->isActive=false;
     }
 }
 
@@ -471,21 +462,43 @@ void Renderer::startNextFrame()
     setViewProjectionMatrix();   //Update the view and projection matrix in the Uniform
 
 
-    timerSpawn+=0.0016f;
-    if(timerSpawn>0.1f){
+    timerSpawn+=0.07f; //just to make balls flow faster
+    if(timerSpawn>variedTime){
         activateBalls(timerSpawn);
-        timerSpawn=0.0f;
+        variedTime=static_cast<float>((QRandomGenerator::global()->generateDouble())/2);
+        timerSpawn=0.f;
     }
 
     for (std::vector<VisualObject*>::iterator it=mObjects.begin(); it!=mObjects.end(); it++){
         if((*it)->isBall && (*it)->isActive){
             spawnBalls((*it));
-            if(!FluidBSplineExists){
+
+            if(!(*it)->madeBSpline){
                 makeFluidBSpline((*it));
             }
 
         }
     }
+
+
+
+
+    if(mBalls.size()>0){
+        mObjects.push_back(mBalls.at(0));
+        // VkDevice logicalDevice = mWindow->device();
+        // mDeviceFunctions = mWindow->vulkanInstance()->deviceFunctions(logicalDevice);
+
+        // // Initialize the graphics queue
+        // uint32_t graphicsQueueFamilyIndex = mWindow->graphicsQueueFamilyIndex();
+        // mDeviceFunctions->vkGetDeviceQueue(logicalDevice, graphicsQueueFamilyIndex, 0, &mGraphicsQueue);
+
+        // const int concurrentFrameCount = mWindow->concurrentFrameCount(); // 2 on Oles Machine
+        const VkPhysicalDeviceLimits *pdevLimits = &mWindow->physicalDeviceProperties()->limits;
+        const VkDeviceSize uniAlign = pdevLimits->minUniformBufferOffsetAlignment;
+        createVertexBuffer(uniAlign,mBalls.at(0));
+
+    }
+
 
 
     //***********************single ball simulation ************************other tracking
@@ -531,33 +544,21 @@ void Renderer::startNextFrame()
             }
             else   //No index buffer - use regular draw
                 mDeviceFunctions->vkCmdDraw(commandBuffer, (*it)->getVertices().size(), 1, 0, 0);
-
-            // if((*it)->isBall){
-            //     if((*it)->isFinishedMoving){
-            //                 (*it)->isActive=false;
-            //                 (*it)->setPosition(40.3f, 11.3f, 50.55f);
-            //                 (*it)->isFinishedMoving=false;
-            //     }       //qDebug()<<"                                                           spawn";
-            //     else{
-            //         spawnBalls((*it));
-            //         //qDebug()<<"                                                           spawn";
-            //     }
-            // }
         }
     }
 
     /***************************************/
 
     // // move ball
-    QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
-    ball->barysentriske(pos,0.0016f);
-    //check collision with the wall, adjust velocity and position
-    ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
-    if(fabs(ballwalldistance)<=ball->radius){
-        QVector3D current_v=ball->velocity;
-        ball->velocity=current_v-2*(QVector3D::dotProduct(ball->velocity,wall_->normal))*wall_->normal;
-        ball->position+=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
-    }
+    // QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
+    // ball->barysentriske(pos,0.0016f);
+    // //check collision with the wall, adjust velocity and position
+    // ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
+    // if(fabs(ballwalldistance)<=ball->radius){
+    //     QVector3D current_v=ball->velocity;
+    //     ball->velocity=current_v-2*(QVector3D::dotProduct(ball->velocity,wall_->normal))*wall_->normal;
+    //     ball->position+=((ball->radius -ballwalldistance)/ball->radius)*current_v + (ballwalldistance/ball->radius)*ball->velocity;
+    // }
 
 
     mDeviceFunctions->vkCmdEndRenderPass(commandBuffer);
@@ -1118,18 +1119,14 @@ void Renderer::activateBalls(float dt)
 
     for (VisualObject* it: mObjects){
         if(!it->isActive&& it->isBall){
-            it->isActive=true;
-            //it->setPosition(0.f, 0.f, 0.f);
             it->isFinishedMoving=false;
+            it->isNotMoving=false;
+            it->madeBSpline=false;
             it->setPosition(40.3f, 11.3f, 50.55f);
-            // it->velocity={0.f, 0.f, 0.f};
-            // it->velocity={0.f, 0.f, 0.f};
-
-
+            it->velocity=QVector3D{0.f, 0.f, 0.f};
+            it->position=QVector3D{0.f, 0.f, 0.f};
+            it->isActive=true;
             break;
-        }
-        else{
-            //qDebug()<<"ball is still running";
         }
     }
 }

@@ -24,23 +24,10 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
         QVector2D AP=QVector2D{ballX-A.x, ballZ-A.z};
         float denominator = AB.x()*AC.y() -AB.y()*AC.x();   //CROSS PRODUCT OF AB, AC
 
-
-
         if (denominator == 0.0f)
         {
             continue;
         }
-
-
-        // QVector3D PA=QVector3D{A.x-ballX, A.y-ballY, A.z-ballZ};
-        // QVector3D PB=QVector3D{B.x-ballX, B.y-ballY, B.z-ballZ};
-        // QVector3D PC=QVector3D{C.x-ballX, C.y-ballY, C.z-ballZ};
-
-
-        // float lambda1 = (PB.x()*PC.z() -PB.z()*PC.x())/denominator;
-        // float lambda2 = (PC.x()*PA.z() -PC.z()*PA.x())/denominator;
-        // float lambda3 = (PA.x()*PB.z() -PA.z()*PB.x())/denominator;
-
 
         float lambda1 = (AP.x()*AC.y() -AC.x()*AP.y())/denominator;
         float lambda2 = (AB.x()*AP.y() -AB.y()*AP.x())/denominator;
@@ -101,17 +88,27 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             //check if ball stopped moving for drawing b spline track
             if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
                 //push every 10th point
-                ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y(),getPosition().z()-radius});
-                PointsCount=0;
+                if(madeBSpline){
+                    ctrl_p_flate.clear();
+                    PointsCount=0;
+                    dtime=0.0f; //for redrawing b splines for fluid
+                    qDebug()<<ctrl_p_flate.size();
+                }
+                else{
+                    ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y(),getPosition().z()-radius});
+                    PointsCount=0;
+                }
+
                 //qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
             if(!isFinishedMoving){
                 if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity){
                     dtime+=dt;
-                    //qDebug()<<dtime;
-                    if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
+                    //qDebug()<<dtime<< " time and index "<<i;
+                    if(dtime>2.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
                         isNotMoving=true;
                         isFinishedMoving=true;
+
                     }
                 }
                 else{ //ball is moving

@@ -10,6 +10,7 @@
 #include "TriangleSurface.h"
 #include "rollingball.h"
 #include "quadraticspline.h"
+#include <QRandomGenerator>
 class Renderer : public QVulkanWindowRenderer
 {
 public:
@@ -24,6 +25,7 @@ public:
     float timerSpawn{0.f};
     void spawnBalls(VisualObject* ball_);
     void makeFluidBSpline(VisualObject* ball_);
+    float variedTime=0.1f;
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders

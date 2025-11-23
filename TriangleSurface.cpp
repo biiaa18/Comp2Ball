@@ -274,10 +274,10 @@ void TriangleSurface::reorderVertices()
 
 wall::wall():VisualObject()
 {
-    Vertex v1{ 0.5f,  0.0f,  50.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-right corner
-    Vertex v2{ 0.5f,  0.0f,  100.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-left corner
-    Vertex v3{ 0.5f,  10.0f,  50.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-right corner
-    Vertex v4{ 0.5f,  10.0f,  100.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-left corner
+    Vertex v1{ 0.5f,  0.0f,  -400.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-right corner
+    Vertex v2{ 0.5f,  0.0f,  400.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-left corner
+    Vertex v3{ 0.5f,  10.0f,  -400.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-right corner
+    Vertex v4{ 0.5f,  10.0f,  400.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-left corner
 
     //Pushing 1st triangle,
     mVertices.push_back(v1);
@@ -298,7 +298,7 @@ wall::wall():VisualObject()
     mIndices.push_back(1);
 
     float z_= abs((v2.z-v1.z)/2);
-    center={0.5f,  0.0f, 0.f};
+    center={v1.x, v1.y, v1.z};
     QVector3D AB={v2.x-v1.x,v2.y-v1.y,v2.z-v1.z};
     QVector3D AC={v3.x-v1.x,v3.y-v1.y,v3.z-v1.z};
     normal=QVector3D::crossProduct(AB, AC);
