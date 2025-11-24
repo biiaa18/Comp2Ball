@@ -18,14 +18,20 @@ public:
 
     bool FluidBSplineExists=false;
     float ballwalldistance;
+    float current_d=0.f;
     TriangleSurface* surf;
     RollingBall* ball;
     wall* wall_;
     QuadraticSpline* track;
     float timerSpawn{0.f};
+    void activateBalls(float x, float y, float z);
     void spawnBalls(VisualObject* ball_);
     void makeFluidBSpline(VisualObject* ball_);
     float variedTime=0.1f;
+    bool CollisionHappend=false;
+    int collision=0;
+
+    std::vector<VisualObject*> mObjects;
     //Initializes the Vulkan resources needed,
     // the buffers
     // vertex descriptions for the shaders
@@ -91,7 +97,7 @@ protected:
 
 private:
     friend class VulkanWindow;
-    std::vector<VisualObject*> mObjects;    //All objects in the program
+   /* std::vector<VisualObject*> mObjects; */   //All objects in the program
     std::vector<VisualObject*> mBalls;    //for fluid simulation
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
 
@@ -138,7 +144,7 @@ private:
     } mColorMaterial;
 
 
-    void activateBalls(float dt);
+
 };
 
 #endif // RENDERER_H

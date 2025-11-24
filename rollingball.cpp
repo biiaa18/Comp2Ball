@@ -105,7 +105,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
                 if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity){
                     dtime+=dt;
                     //qDebug()<<dtime<< " time and index "<<i;
-                    if(dtime>2.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
+                    if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
                         isNotMoving=true;
                         isFinishedMoving=true;
 
@@ -144,13 +144,13 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     //setPosition( -1.8f, 3.f, -3.7f); //most fun to look at
 
     //-----checking with 9.10.9
-    //setPosition( 4.0f, 3.f, 0.f); // point C
+    setPosition( 4.0f, 3.f, 0.f); // point C
     //setPosition( 3.9f, 3.f, -0.1f);
 
 
     //setPosition( 2.f, 2.1f, -1.9f); //in the middle
     //setPosition(-70.3f, 11.3f, -100.55f);
-    setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
+    //setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
     //setPosition(40.3f, 11.3f, 50.55f);//wall collision right
-    scale(0.5);
+    //scale(0.5);
 };

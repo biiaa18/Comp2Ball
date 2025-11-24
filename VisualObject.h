@@ -14,7 +14,7 @@ public:
     VisualObject();
 
     //ball
-    float radius=0.1;//1
+    float radius=0.5f;//1
     QVector3D position{0.f,0.f,0.f};//{40.3f, 11.3f, 50.55f};
     QVector3D velocity={0.f, 0.f, 0.f};
 

@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include <QTabWidget>
 #include <QMenuBar>
-#include <QLineEdit>
 #include <QInputDialog>
 #include "VulkanWindow.h"
 #include "Renderer.h"
@@ -34,6 +33,8 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     QPushButton *nameButton = new QPushButton(tr("&Name")); // Dag 040225
     nameButton->setFocusPolicy(Qt::NoFocus);                // Dag 040225
 
+
+
     //connect push of grab button to screen grab function
     connect(grabButton, &QPushButton::clicked, this, &MainWindow::onScreenGrabRequested);
     //connect quit button to quit-function
@@ -47,22 +48,43 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
 
     //Makes the layout of the program, adding items we have made
     QVBoxLayout *layout = new QVBoxLayout;
+    QPushButton *changePosition = new QPushButton(tr("&Change start position"), this);
 
-    QLineEdit* x=new QLineEdit(vulkanWindowWrapper);
+    x=new QLineEdit(vulkanWindowWrapper);
     x->setPlaceholderText("new x");
     connect(x, &QLineEdit::textChanged, this,[=](const QString& text){
         x_=text.toFloat();
-
+        //x_made=true;
     });
 
     QLineEdit* y=new QLineEdit(vulkanWindowWrapper);
     y->setPlaceholderText("new y");
+    connect(y, &QLineEdit::textChanged, this,[=](const QString& text){
+        y_=text.toFloat();
+        // y_made=true;
+    });
     QLineEdit* z=new QLineEdit(vulkanWindowWrapper);
     z->setPlaceholderText("new z");
+    connect(z, &QLineEdit::textChanged, this,[=](const QString& text){
+        z_=text.toFloat();
+        //z_made=true;
+    });
+
+    connect(changePosition, &QPushButton::clicked, this,[=](){
+        setBALLposition(x_,y_,z_);
+        // if(x_made && y_made && z_made){
+        //     setBALLposition(x_,y_,z_);
+        //     x_made=false;
+        //     y_made=false;
+        //     z_made=false;
+        // }
+    });
+
     layout->addWidget(x,1);
     layout->addWidget(y,2);
     layout->addWidget(z,3);
-    //setBALLposition(x_,y_,z_);
+    layout->addWidget(changePosition,4);
+
     layout->setMenuBar(createMenu());
     layout->addWidget(vulkanWindowWrapper, 7);
     mInfoTab = new QTabWidget(this);
@@ -104,6 +126,8 @@ void MainWindow::onScreenGrabRequested()
     fd.selectFile("test.png");
     if (fd.exec() == QDialog::Accepted)
         img.save(fd.selectedFiles().first());
+
+
 }
 
 QMenuBar *MainWindow::createMenu()
@@ -158,28 +182,12 @@ void MainWindow::selectName()
 
 void MainWindow::setBALLposition(float x, float y, float z)
 {
-
-
-    // bool ok;
-    // QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-    //                                      tr("x:"), QLineEdit::Normal,
-    //                                      QDir::home().dirName(), &ok);
-    // if (ok && !text.isEmpty())
-    //     x=text.toFloat();
-
-    // QString text1 = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-    //                                      tr("y:"), QLineEdit::Normal,
-    //                                      QDir::home().dirName(), &ok);
-    // if (ok && !text.isEmpty())
-    //     y=text.toFloat();
-
-
-    // QString text2 = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-    //                                      tr("z:"), QLineEdit::Normal,
-    //                                      QDir::home().dirName(), &ok);
-    // if (ok && !text.isEmpty())
-    //     z=text.toFloat();
-    //get renderer
     auto rw = dynamic_cast<Renderer*>(mVulkanWindow->getRenderWindow());
-    rw->getObjects().at(1)->setPosition(x,y,z);
+    for (std::vector<VisualObject*>::iterator it=rw->mObjects.begin(); it!=rw->mObjects.end(); it++){
+        if((*it)->isBall && (*it)->isActive){
+            (*it)->isActive=false;
+        }
+    }
+    //rw->getObjects().at(1)->isActive=false;
+    rw->activateBalls(x,y,z);
 }

@@ -2,7 +2,7 @@
 #define HELLOVULKANWIDGET_H
 
 #include <QWidget>
-
+#include <QLineEdit>
 QT_FORWARD_DECLARE_CLASS(QTabWidget)
 QT_FORWARD_DECLARE_CLASS(QPlainTextEdit)
 
@@ -35,9 +35,16 @@ private:
     QMenu* fileMenu{ nullptr };
     QAction* openFileAction{ nullptr };
     QAction* exitAction{ nullptr };
+    //QAction*
     std::string mSelectedName;
 
-    float x_{0},y_{0},z_{0};
+    QLineEdit* x;
+    float x_{0};
+    float y_{0};
+    float z_{0};
+    bool x_made=false;
+    bool y_made=false;
+    bool z_made=false;
 
 private slots:
     void openFile();
