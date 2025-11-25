@@ -40,11 +40,11 @@ void oktaederClass::subDivide(const QVector3D &a, const QVector3D &b, const QVec
 
 void oktaederClass::lagTriangel(const QVector3D &v1, const QVector3D &v2, const QVector3D &v3)
 {
-    Vertex v(v1,v1,{0.f,0.f});
+    Vertex v(v1,-v1,{0.f,0.f});
     mVertices.push_back(v);
-    v=Vertex{v2,v2,{0.f,1.f}};
+    v=Vertex{v2,-v2,{0.f,1.f}};
     mVertices.push_back(v);
-    v=Vertex{v3,v3,{1.f,0.f}};
+    v=Vertex{v3,-v3,{1.f,0.f}};
     mVertices.push_back(v);
 
     //mMatrix.translate(0,5,0);

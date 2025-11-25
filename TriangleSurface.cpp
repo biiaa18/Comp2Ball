@@ -213,8 +213,8 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     for(int i=0; i<mIndices.size();i+=3){//for every triangle
         //finding 3 vertices in triangle to compute normal vector
         QVector3D A={mVertices[mIndices[i]].x,mVertices[mIndices[i]].y,mVertices[mIndices[i]].z};
-        QVector3D B={mVertices[mIndices[i+1]].x,mVertices[mIndices[i+1]].y,mVertices[mIndices[i+2]].z};
-        QVector3D C={mVertices[mIndices[i+2]].x,mVertices[mIndices[i+1]].y,mVertices[mIndices[i+2]].z};
+        QVector3D B={mVertices[mIndices[i+1]].x,mVertices[mIndices[i+1]].y,mVertices[mIndices[i+1]].z};
+        QVector3D C={mVertices[mIndices[i+2]].x,mVertices[mIndices[i+2]].y,mVertices[mIndices[i+2]].z};
 
         //finding normal vector
         QVector3D AB=B-A;

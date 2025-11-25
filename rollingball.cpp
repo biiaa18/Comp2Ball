@@ -81,9 +81,9 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 
             //rotation
             rotation=QVector3D::crossProduct(normal_v,velocity);//radius; //9.11 (added radius so match the ball size)
-            rotation.normalize();
+            //rotation.normalize();
             float degree=qRadiansToDegrees(position.length()/radius);//position is translation and angle= based on 9.10
-            rotate(degree, rotation.x(),rotation.y(), rotation.z());
+            rotate(-degree, rotation.x(),rotation.y(), rotation.z());
 
             //check if ball stopped moving for drawing b spline track
             if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
