@@ -138,7 +138,7 @@ void Renderer::spawnBalls(VisualObject *ball_)
     qDebug()<<ballwalldistance<<"\n";
     //ballwalldistance=((ball_->getPosition()-wall_->center)*(wall_->normal)).length();
 
-    if(fabs(ballwalldistance)<=(ball_->radius)+0.01 && collision<1){
+    if(fabs(ballwalldistance)<=(ball_->radius)+0.01){
         CollisionHappend=true;
         collision+=1;
     }
@@ -147,7 +147,7 @@ void Renderer::spawnBalls(VisualObject *ball_)
         collision=0;
     }
 
-    if (fabs(ballwalldistance)<=(ball_->radius)+0.01 && CollisionHappend){
+    if (CollisionHappend && collision<2){
         //qDebug()<<"             WALL!!\n";
         QVector3D current_v=ball_->velocity;
         ball_->velocity=current_v-2*(QVector3D::dotProduct(current_v,wall_->normal))*wall_->normal;
@@ -155,7 +155,6 @@ void Renderer::spawnBalls(VisualObject *ball_)
         ball_->position+=((ball_->radius -ballwalldistance)/ball_->radius)*current_v + (ballwalldistance/ball_->radius)*ball_->velocity;
         ball_->setPosition(ball_->getPosition().x()+ball_->position.x(), ball_->getPosition().y()+ball_->position.y(), ball_->getPosition().z()+ball_->position.z());
         //ball_->position+=(ball_->radius -ballwalldistance)*wall_->normal; // + (ballwalldistance/ball_->radius)*ball_->velocity;
-        CollisionHappend=false;
         return;
     }
 
@@ -485,8 +484,8 @@ void Renderer::startNextFrame()
     timerSpawn+=0.07f; //just to make balls flow faster
     if(timerSpawn>variedTime){
         //activateBalls(4.0f, 3.f, 0.f); //single ball
-        activateBalls(40.3f, 11.3f, 50.55f); //fluid
-
+        //activateBalls(40.3f, 11.3f, 50.55f); //fluid
+        activateBalls(-35.f, 0.f, 100.f); //fluid
         variedTime=static_cast<float>((QRandomGenerator::global()->generateDouble())/2);
         timerSpawn=0.f;
     }

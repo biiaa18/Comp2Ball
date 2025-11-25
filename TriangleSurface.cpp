@@ -209,6 +209,43 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     }
     triangulate(width, height);
 
+    //compute normals for smooth shading
+    for(int i=0; i<mIndices.size();i+=3){//for every triangle
+        //finding 3 vertices in triangle to compute normal vector
+        QVector3D A={mVertices[mIndices[i]].x,mVertices[mIndices[i]].y,mVertices[mIndices[i]].z};
+        QVector3D B={mVertices[mIndices[i+1]].x,mVertices[mIndices[i+1]].y,mVertices[mIndices[i+2]].z};
+        QVector3D C={mVertices[mIndices[i+2]].x,mVertices[mIndices[i+1]].y,mVertices[mIndices[i+2]].z};
+
+        //finding normal vector
+        QVector3D AB=B-A;
+        QVector3D AC=C-A;
+        QVector3D face_n=QVector3D::crossProduct(AB, AC).normalized(); //normalized normal vector
+
+        //make a new "normal" instead of colors and
+        //add the normal vector value to all triangles that make a "face" together
+        //v0
+        mVertices[mIndices[i]].r+=face_n.x();
+        mVertices[mIndices[i]].g+=face_n.y();
+        mVertices[mIndices[i]].b+=face_n.z();
+        //v1
+        mVertices[mIndices[i+1]].r+=face_n.x();
+        mVertices[mIndices[i+1]].g+=face_n.y();
+        mVertices[mIndices[i+1]].b+=face_n.z();
+        //v2
+        mVertices[mIndices[i+2]].r+=face_n.x();
+        mVertices[mIndices[i+2]].g+=face_n.y();
+        mVertices[mIndices[i+2]].b+=face_n.z();
+    }
+
+    //normalize the normals for smooth shading
+    for(Vertex& v: mVertices){
+        QVector3D new_normal={v.r, v.g, v.b};
+        new_normal.normalize();
+        v.r=new_normal.x();
+        v.g=new_normal.y();
+        v.b=new_normal.z();
+    }
+
     //----------------------------------------------------------------------------------------------------------------------
 }
 
