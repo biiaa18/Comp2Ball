@@ -24,6 +24,7 @@ public:
     QVector3D center;
     QVector3D normal;
 
+
     //fluid & ball
     bool madeBSpline=false;
     bool isBall=false;

@@ -8,6 +8,17 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 {
     float ballX = vertx.x();
     float ballZ = vertx.y();
+    wallDistance=QVector3D::dotProduct({getPosition()-static_wall->center},wall_normal);
+    //qDebug()<<fabs(fabs(wallDistance) -fabs(current_d))<<"\n";
+    if(fabs(fabs(wallDistance) -fabs(current_d)) != 0){
+        current_d=fabs(wallDistance); //another check for when the ball has stopped moving to avoid floating errors
+        wall_distance_static=false;
+    }
+    else{
+        wall_distance_static=true;
+    }
+
+    //qDebug()<<ballwalldistance<<"\n";
     //qDebug()<<"x : "<<ballX<<" y: "<< ballZ<<"\n";
     for (size_t i = 0; i < triangle_surf->mIndices.size(); i += 3)
     {
@@ -81,7 +92,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 
 
             //update velocity and position
-            float previous_velocity=velocity.length(); //need this to compare to updated velocity to define that ball has stopped moving.
+            previous_velocity=velocity.length(); //need this to compare to updated velocity to define that ball has stopped moving.
             velocity+=acceleration*dt; //v1=v0+a*dt  9.16
             position+=velocity*dt; //p1=p0+v*dt      9.17
             setPosition(getPosition().x()+position.x(), height, getPosition().z()+position.z());
@@ -93,50 +104,67 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//position is translation and angle= based on 9.10
             rotate(degree, rotation.x(),rotation.y(), -rotation.z());
 
+            //extra finished moving check, distance between the wall and the ball is static
+            // wallDistance=QVector3D::dotProduct({getPosition()-static_wall->center},wall_normal);
+            // qDebug()<<fabs(fabs(wallDistance) -fabs(current_d))<<"\n";
+            // if(fabs(fabs(wallDistance) -fabs(current_d)) != 0){
+            //     current_d=fabs(wallDistance); //another check for when the ball has stopped moving to avoid floating errors
+            //     wall_distance_static=false;
+            // }
+            // else{
+            //     wall_distance_static=true;
+            // }
+
             //check if ball stopped moving for drawing b spline track
-            if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
+            if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving && !wall_distance_static){
                 //push every 10th point
                 if(madeBSpline){
                     ctrl_p_flate.clear();
                     PointsCount=0;
                     dtime=0.0f; //for redrawing b splines for fluid
-                    qDebug()<<ctrl_p_flate.size();
+                    //qDebug()<<ctrl_p_flate.size();
                 }
                 else{
                     ctrl_p_flate.push_back({getPosition().x()-radius,getPosition().y(),getPosition().z()-radius});
                     PointsCount=0;
                 }
-
                 //qDebug()<<velocity.length()<<" "<<previous_velocity<<"\n";
             }
-            if(!isFinishedMoving){
-                if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity){
-                    dtime+=dt;
-                    //qDebug()<<dtime<< " time and index "<<i;
-                    if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
-                        isNotMoving=true;
-                        isFinishedMoving=true;
-
-                    }
-                }
-                else{ //ball is moving
-                    dtime=0.f;
-                    isNotMoving=false;
-                }
-            }
-            else { //of ball stopped moving, put isNotmoving back to false, so we dont create more than 1 b spline
-                isNotMoving=false;
-
-            }
-
-
-            //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
             break;
         }
         else{
-
                 //qDebug("not inside triangle of  triangle_surf");
         }
+    }
+    qDebug()<<wall_distance_static<<"\n";
+    if(!isFinishedMoving){
+        if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity && !wall_distance_static){
+            dtime+=dt;
+            //qDebug()<<dtime<< " time and index "<<i;
+            if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
+                isNotMoving=true;
+                isFinishedMoving=true;
+            }
+        }
+        else if(wall_distance_static){
+            // isNotMoving=true;
+            // isFinishedMoving=true;
+            dtime+=dt;
+            //qDebug()<<dtime;
+            if(dtime>0.1f){
+                isNotMoving=true;
+                isFinishedMoving=true;
+
+            }
+
+        }
+        else{ //ball is moving
+            dtime=0.f;
+            isNotMoving=false;
+        }
+    }
+    else { //of ball stopped moving, put isNotmoving back to false, so we dont create more than 1 b spline
+        isNotMoving=false;
     }
 
     return height;

@@ -4,6 +4,7 @@
 #include "oktaederclass.h"
 #include "quadraticspline.h"
 
+
 class RollingBall: public oktaederClass
 {
 public:
@@ -29,8 +30,14 @@ public:
     QVector3D collision_vector;
     int PointsCount{0};
     float dtime{0};
-    QVector3D wallDistance;
-    float y=wallDistance.length();
+
+
+    float previous_velocity;
+    wall* static_wall= new wall();
+    QVector3D wall_normal=static_wall->normal;
+    float current_d =0;
+    float wallDistance;
+    bool wall_distance_static=false;
 };
 
 

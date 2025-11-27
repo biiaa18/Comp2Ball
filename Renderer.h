@@ -18,7 +18,6 @@ public:
 
     bool FluidBSplineExists=false;
     float ballwalldistance;
-    float current_d=0.f;
     TriangleSurface* surf;
     RollingBall* ball;
     wall* wall_;
