@@ -155,8 +155,8 @@ void Renderer::spawnBalls(VisualObject *ball_)
             ball_->position+=((ball_->radius -ballwalldistance)/ball_->radius)*current_v + (ballwalldistance/ball_->radius)*ball_->velocity;
            // qDebug()<<" new position " <<ball_->position.x()<<" "<<ball_->position.y()<<" "<<ball_->position.z();
             ball_->setPosition(ball_->getPosition().x()+ball_->position.x(), ball_->getPosition().y()+ball_->position.y(), ball_->getPosition().z()+ball_->position.z());
-            // QVector3D pos= ball_->getPosition()+ball_->velocity*0.0016f;
-            // ball_->setPosition(pos.x(),pos.y(),pos.z());
+            QVector3D pos= ball_->getPosition()+ball_->velocity*0.0016f;
+            ball_->setPosition(pos.x(),pos.y(),pos.z());
             ball_->isColliding=true;
             return;
         }
@@ -173,18 +173,23 @@ void Renderer::spawnBalls(VisualObject *ball_)
 
 void Renderer::makeFluidBSpline(VisualObject *ball_)
 {
-    // if (FluidBSplineExists){
-    //     return;
-    // }
-
     if(ball_->isNotMoving && !ball_->madeBSpline){
+        if (FluidBSplineExists && !ball_->ctrl_p_flate.empty()){
+            QVector3D NewControlPoint=ball_->ctrl_p_flate.front();
+            //if first control point of new b spline equals to first control point of last b spline,
+            //            we dont want to draw duplicate
+            if((startingControlPoint-NewControlPoint).length()<0.001f){
+                return;
+            }
+        }
         track= new QuadraticSpline(ball_->ctrl_p_flate,ball_->ctrl_p_flate.size(),2);
         track->isActive=true;
         //qDebug()<<"                             making b spline";
         mBalls.push_back(track);
         ball_->madeBSpline=true;
-        // FluidBSplineExists=true;
-        //ball_->isActive=false;
+        startingControlPoint=ball_->ctrl_p_flate.front();
+        FluidBSplineExists=true;
+        ball_->ctrl_p_flate.clear();
     }
 }
 
@@ -493,7 +498,7 @@ void Renderer::startNextFrame()
         //activateBalls(4.0f, 3.f, 0.f); //single ball
         //activateBalls(40.3f, 11.3f, 50.55f); //fluid
         activateBalls(-35.f, 0.f, 100.f); //fluid
-        variedTime=static_cast<float>((QRandomGenerator::global()->generateDouble())/2);
+        variedTime=static_cast<float>((QRandomGenerator::global()->generateDouble())/2); //generates values randomly between 0 and 0.5
         timerSpawn=0.f;
     }
 
@@ -501,7 +506,6 @@ void Renderer::startNextFrame()
     for (std::vector<VisualObject*>::iterator it=mObjects.begin(); it!=mObjects.end(); it++){
         if((*it)->isBall && (*it)->isActive){
             spawnBalls((*it));
-
             if(!(*it)->madeBSpline){
                 makeFluidBSpline((*it));
             }
@@ -512,14 +516,7 @@ void Renderer::startNextFrame()
     //////b spline drawing
     if(mBalls.size()>0){
         mObjects.push_back(mBalls.at(0));
-        // VkDevice logicalDevice = mWindow->device();
-        // mDeviceFunctions = mWindow->vulkanInstance()->deviceFunctions(logicalDevice);
-
-        // // Initialize the graphics queue
-        // uint32_t graphicsQueueFamilyIndex = mWindow->graphicsQueueFamilyIndex();
-        // mDeviceFunctions->vkGetDeviceQueue(logicalDevice, graphicsQueueFamilyIndex, 0, &mGraphicsQueue);
-
-        // const int concurrentFrameCount = mWindow->concurrentFrameCount(); // 2 on Oles Machine
+        //creating buffer needed for rendering
         const VkPhysicalDeviceLimits *pdevLimits = &mWindow->physicalDeviceProperties()->limits;
         const VkDeviceSize uniAlign = pdevLimits->minUniformBufferOffsetAlignment;
         createVertexBuffer(uniAlign,mBalls.at(0));
@@ -1146,11 +1143,13 @@ void Renderer::activateBalls(float x, float y, float z)
 
     for (VisualObject* it: mObjects){
         if(!it->isActive&& it->isBall){
-            it->isFinishedMoving=false;
-            it->isNotMoving=false;
+            it->ctrl_p_flate.clear();
+            it->ctrl_p_flate.push_back({x,y,z});
             it->madeBSpline=false;
             it->setPosition( x, y, z);
             it->velocity=QVector3D{0.f, 0.f, 0.f};
+            it->isFinishedMoving=false;
+            it->isNotMoving=false;
             it->position=QVector3D{0.f, 0.f, 0.f};
             it->isActive=true;
             break;

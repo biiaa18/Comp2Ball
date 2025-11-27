@@ -17,6 +17,7 @@ public:
     Renderer(QVulkanWindow *w, bool msaa = false);
 
     bool FluidBSplineExists=false;
+    QVector3D startingControlPoint;
     float ballwalldistance;
     TriangleSurface* surf;
     RollingBall* ball;

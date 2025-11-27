@@ -104,17 +104,6 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             float degree=qRadiansToDegrees(position.length()/radius);//position is translation and angle= based on 9.10
             rotate(degree, rotation.x(),rotation.y(), -rotation.z());
 
-            //extra finished moving check, distance between the wall and the ball is static
-            // wallDistance=QVector3D::dotProduct({getPosition()-static_wall->center},wall_normal);
-            // qDebug()<<fabs(fabs(wallDistance) -fabs(current_d))<<"\n";
-            // if(fabs(fabs(wallDistance) -fabs(current_d)) != 0){
-            //     current_d=fabs(wallDistance); //another check for when the ball has stopped moving to avoid floating errors
-            //     wall_distance_static=false;
-            // }
-            // else{
-            //     wall_distance_static=true;
-            // }
-
             //check if ball stopped moving for drawing b spline track
             if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving && !wall_distance_static){
                 //push every 10th point
@@ -136,7 +125,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
                 //qDebug("not inside triangle of  triangle_surf");
         }
     }
-    qDebug()<<wall_distance_static<<"\n";
+    //qDebug()<<wall_distance_static<<"\n";
     if(!isFinishedMoving){
         if (fabs(velocity.length()-previous_velocity)<0.0001 || velocity.length()==previous_velocity && !wall_distance_static){
             dtime+=dt;
@@ -144,17 +133,22 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             if(dtime>1.3f){ //ball stopped moving, because velocity has been the same for too long (from testing: optimal is 1.0-1.5 seconds)
                 isNotMoving=true;
                 isFinishedMoving=true;
+                if(!ctrl_p_flate.empty()){
+                    ctrl_p_flate.push_back(getPosition());
+                }
             }
         }
         else if(wall_distance_static){
-            // isNotMoving=true;
-            // isFinishedMoving=true;
             dtime+=dt;
             //qDebug()<<dtime;
             if(dtime>0.1f){
                 isNotMoving=true;
                 isFinishedMoving=true;
-
+            }
+            // isNotMoving=true;
+            // isFinishedMoving=true;
+            if(!ctrl_p_flate.empty()){
+                ctrl_p_flate.push_back(getPosition());
             }
 
         }
