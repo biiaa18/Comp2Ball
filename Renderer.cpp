@@ -123,38 +123,29 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 void Renderer::spawnBalls(VisualObject *ball_)
 {
-    if(ball_->isFinishedMoving){
+    if(ball_->isFinishedMoving){ //deactivate ball if it stopped moving
         ball_->isActive=false;
         //qDebug()<<" stopped ------------------------stopped moving ----------------------";
         return;
     }
 
-    //qDebug()<<" static: "<<ball_->wall_distance_static<<"\n";
     QVector3D wall_normal=wall_->normal;
+    //equation from figure 9.6, chapter 9.7.2, distance between ball and wall centre
     ballwalldistance=QVector3D::dotProduct({ball_->getPosition()-wall_->center},wall_normal);
-
+    //check if collision happend
     if(fabs(ballwalldistance)<=(ball_->radius)+0.01f){
-        // if(ballwalldistance<0){
-        //     current_v=-current_v;
-        //     //wall_normal=-wall_normal;
-        //     //ballwalldistance=-ballwalldistance;
-        // }
-
         if(!ball_->isColliding){
             QVector3D current_v=ball_->velocity;
             if(ballwalldistance<0){
-                //current_v=-current_v;
-                //wall_normal=-wall_normal;
-                //ballwalldistance=-ballwalldistance;
+                current_v=-current_v;
             }
             //qDebug()<<current_v<<" current \n";
+            //9.18 velocity reflection formula
             ball_->velocity=current_v-2*(QVector3D::dotProduct(current_v,wall_normal))*wall_normal;
-            //qDebug()<<ball_->velocity<<" after wall \n";
-            //qDebug()<<ball_->position<<" current position \n";
-
+            //page 139 lecture notes, position correction (chapter 9.7.3) after collision
             ball_->position+=((ball_->radius -ballwalldistance)/ball_->radius)*current_v + (ballwalldistance/ball_->radius)*ball_->velocity;
-           // qDebug()<<" new position " <<ball_->position.x()<<" "<<ball_->position.y()<<" "<<ball_->position.z();
             ball_->setPosition(ball_->getPosition().x()+ball_->position.x(), ball_->getPosition().y()+ball_->position.y(), ball_->getPosition().z()+ball_->position.z());
+            //additional position correction (9.17) to avoid floating error
             QVector3D pos= ball_->getPosition()+ball_->velocity*0.0016f;
             ball_->setPosition(pos.x(),pos.y(),pos.z());
             ball_->isColliding=true;
@@ -164,8 +155,6 @@ void Renderer::spawnBalls(VisualObject *ball_)
     else{
         ball_->isColliding=false;
     }
-
-
     QVector2D pos={ball_->getPosition().x(), ball_->getPosition().z()};
     ball_->barysentriske(pos,0.0016f);
     //qDebug()<<"im rolling-----------------------------------rolling--------------------";
