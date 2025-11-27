@@ -23,6 +23,10 @@ public:
     float barysentriske(QVector2D vertx, float dt) override;
     float height;
 
+    int old_index=-1;
+    int new_index=0;
+    QVector3D old_normal;
+    QVector3D collision_vector;
     int PointsCount{0};
     float dtime{0};
     QVector3D wallDistance;

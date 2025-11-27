@@ -9,35 +9,27 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
     float ballX = vertx.x();
     float ballZ = vertx.y();
     //qDebug()<<"x : "<<ballX<<" y: "<< ballZ<<"\n";
-    //float ballY = 0.f;
-
     for (size_t i = 0; i < triangle_surf->mIndices.size(); i += 3)
     {
         Vertex A = triangle_surf->mVertices[triangle_surf->mIndices[i]];
         Vertex B = triangle_surf->mVertices[triangle_surf->mIndices[i + 1]];
         Vertex C = triangle_surf->mVertices[triangle_surf->mIndices[i + 2]];
         //qDebug()<<"A ("<<A.x<<" "<<A.z<<" )   B ("<<B.x<<" "<<B.z<<")   C ("<<C.x<<" "<<C.z<<")\n";        //barycentric coordinates
-        //qDebug()<<"index 0 "<<triangle_surf->mIndices[i]<<" index 1  "<<triangle_surf->mIndices[i + 1]<<" index 2 "<<triangle_surf->mIndices[i + 2]<<"\n";
-
         QVector2D AB=QVector2D{B.x-A.x, B.z-A.z};
         QVector2D AC=QVector2D{C.x-A.x, C.z-A.z};
         QVector2D AP=QVector2D{ballX-A.x, ballZ-A.z};
         float denominator = AB.x()*AC.y() -AB.y()*AC.x();   //CROSS PRODUCT OF AB, AC
-
         if (denominator == 0.0f)
         {
             continue;
         }
-
         float lambda1 = (AP.x()*AC.y() -AC.x()*AP.y())/denominator;
         float lambda2 = (AB.x()*AP.y() -AB.y()*AP.x())/denominator;
         float lambda3 = 1.0f-lambda1-lambda2;
-
-
         if (lambda1 >= 0.f && lambda2 >= 0.f && lambda3 >= 0.f &&
             lambda1 <= 1.f && lambda2 <= 1.f && lambda3 <= 1.f)
         {
-
+            new_index=i;
             PointsCount+=1;
             height=lambda1 * B.y + lambda2 * C.y + lambda3 * A.y+radius*1.1f;
             //break;
@@ -48,12 +40,28 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             QVector3D AC_=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
             QVector3D normal_v =QVector3D::crossProduct(AB_, AC_);    //CROSS PRODUCT OF AB, AC TO FIND NORMAL VECTOR
             normal_v.normalize();
+            old_normal=normal_v.normalized();
+            acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)}; //9.14
             //qDebug()<<"normal vector "<<normal_v.x()<<" "<<normal_v.y()<<" "<<normal_v.z()<<" \n";
 
-            //float friction=0.7f;
-            //acceleration vector
-            //acceleration={g*normal_v.x()*normal_v.y()*(1-friction), g*normal_v.z()*normal_v.y()*(1-friction), g*((1-friction)*(normal_v.y()*normal_v.y())-1)};
-            acceleration={g*normal_v.x()*normal_v.y(), g*normal_v.z()*normal_v.y(), g*(normal_v.y()*normal_v.y()-1)};
+
+            if(new_index!=old_index){
+                QVector3D new_n=normal_v.normalized();
+                if((new_n + old_normal).lengthSquared()<0.0001){ //avoid denominator be 0 when calculating collision vector
+                    collision_vector=new_n;
+                }
+                else{
+                    collision_vector=(new_n + old_normal)/(new_n + old_normal).lengthSquared();
+                }
+
+                velocity-=QVector3D::dotProduct(velocity,collision_vector)*collision_vector; //9.9
+                position+=velocity*dt; //p1=p0+v*dt      9.17
+                setPosition(getPosition().x()+position.x(), height, getPosition().z()+position.z());
+                old_index=new_index;
+            }
+
+            old_normal=normal_v.normalized();
+
             // qDebug()<<"acceleration "<<acceleration.x()<<" "<<acceleration.y()<<" "<<acceleration.z()<<" \n";
 
             //ACCELERATION WITH FORCES
@@ -74,8 +82,8 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
 
             //update velocity and position
             float previous_velocity=velocity.length(); //need this to compare to updated velocity to define that ball has stopped moving.
-            velocity+=acceleration*dt; //v1=v0+a*dt
-            position+=velocity*dt; //p1=p0+v*dt
+            velocity+=acceleration*dt; //v1=v0+a*dt  9.16
+            position+=velocity*dt; //p1=p0+v*dt      9.17
             setPosition(getPosition().x()+position.x(), height, getPosition().z()+position.z());
             //qDebug()<<getPosition().x()<<" y: "<< getPosition().y()<<" "<< getPosition().z()<<"\n";
 
@@ -83,7 +91,7 @@ float RollingBall::barysentriske(QVector2D vertx, float dt) //dt - delta time
             rotation=QVector3D::crossProduct(normal_v,velocity);//radius; //9.11 (added radius so match the ball size)
             //rotation.normalize();
             float degree=qRadiansToDegrees(position.length()/radius);//position is translation and angle= based on 9.10
-            rotate(-degree, rotation.x(),rotation.y(), rotation.z());
+            rotate(degree, rotation.x(),rotation.y(), -rotation.z());
 
             //check if ball stopped moving for drawing b spline track
             if(PointsCount>50 && velocity.length()!=previous_velocity && !isFinishedMoving){
@@ -152,5 +160,5 @@ RollingBall::RollingBall(TriangleSurface *surface) {
     //setPosition(-70.3f, 11.3f, -100.55f);
     //setPosition(-30.3f, 11.3f, 70.55f);//wall collision left
     //setPosition(40.3f, 11.3f, 50.55f);//wall collision right
-    //scale(0.5);
+    scale(1.5);
 };

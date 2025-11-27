@@ -79,11 +79,11 @@ TriangleSurface::TriangleSurface(const std::string& punktsky, int drawT)
     {
         inn >> v;
         Vertex v1;
-        v1.x=v.x+0.1f;
-        v1.y=v.y+0.1f;
-        v1.z=v.z+0.1f;
-        v1.r=1.f;
-        v1.g=0.f;
+        v1.x=v.x+0.01f;
+        v1.y=v.y+0.01f;
+        v1.z=v.z+0.01f;
+        v1.r=0.f;
+        v1.g=1.f;
         v1.b=0.f;
         v1.u=0.f;
         v1.v=0.f;
@@ -135,7 +135,7 @@ TriangleSurface::TriangleSurface(const std::string& vertics, const std::string& 
 
 TriangleSurface::TriangleSurface(const std::string& filename)
 {
-    drawType=0; //testing , should be 0 for triangles;
+    drawType=0; //triangle topology
 
     std::ifstream inn(filename);
     if (!inn.is_open())
@@ -144,8 +144,6 @@ TriangleSurface::TriangleSurface(const std::string& filename)
     int n; //number of vertices 
     Vertex v;
 
-    // std::vector<Point> points;
-    // std::vector<Triangle_> result;
     inn >> n;
     for(int i=0; i<1; i++){
         inn>>v;
@@ -154,7 +152,7 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         ymin=v.z;
         ymax=v.z;
         Vertices.push_back(v);
-        //qDebug() <<"first line------ x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";
+        //qDebug() <<"first line------ x min: "<<xmin <<"y min: "<< ymin <<"x max: "<< xmax<<"y max: "<<ymax<<"\n";s
     }
     for (auto i=0; i<n-1; i++)
     {
@@ -195,13 +193,15 @@ TriangleSurface::TriangleSurface(const std::string& filename)
         Vertex v;
         v.x=it->m.x()-588400.60f; //588400.60f, 0.f, -7181100.45f
         v.y=it->m.y();
-        add=v.y/100.f;
+        add=v.y/113.f;
         v.z=it->m.z()-7181100.45f;
         v.r=0.f;
         v.g=0.f;
         v.b=0.f;
-        v.u=abs(add);//0.1f+add;
-        v.v=abs(add);//3f+add;
+        // v.u=0.f;
+        // v.v=0.f;
+        v.u=abs(add);
+        v.v=abs(add);
         //qDebug() << v.x-588400.6<< v.y << v.z-7181100.45;
         mVertices.push_back(v);
         //algorithm for mIndices.push_back(leaves[i])
@@ -334,10 +334,9 @@ wall::wall():VisualObject()
     mIndices.push_back(2);
     mIndices.push_back(1);
 
-    float z_= abs((v2.z-v1.z)/2);
-    center={v1.x, v1.y, v1.z};
+
+    center={(v1.x +v2.x +v3.x +v4.x)/4.0f, (v1.y +v2.y +v3.y +v4.y)/4.0f, (v1.z +v2.z +v3.z +v4.z)/4.0f};
     QVector3D AB={v2.x-v1.x,v2.y-v1.y,v2.z-v1.z};
     QVector3D AC={v3.x-v1.x,v3.y-v1.y,v3.z-v1.z};
-    normal=QVector3D::crossProduct(AB, AC);
-    normal=normal.normalized();
+    normal=QVector3D::crossProduct(AB, AC).normalized();
 }
