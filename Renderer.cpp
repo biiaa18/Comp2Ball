@@ -496,7 +496,7 @@ void Renderer::startNextFrame()
         if((*it)->isBall && (*it)->isActive){
             spawnBalls((*it));
             if(!(*it)->madeBSpline){
-                makeFluidBSpline((*it));
+                makeFluidBSpline((*it)); //queue the b spline since we already iterate through mObjects
             }
 
         }
@@ -1131,7 +1131,7 @@ void Renderer::activateBalls(float x, float y, float z)
 {
 
     for (VisualObject* it: mObjects){
-        if(!it->isActive&& it->isBall){
+        if(!it->isActive&& it->isBall){  //reset everything for each ball when reactivating
             it->ctrl_p_flate.clear();
             it->ctrl_p_flate.push_back({x,y,z});
             it->madeBSpline=false;
