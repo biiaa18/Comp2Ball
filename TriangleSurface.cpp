@@ -288,33 +288,16 @@ void TriangleSurface::reorderVertices()
                   else{
                       return v->m.x()<v_->m.x();
                   }
-                  // else{ //if it doesnt get sorted by x value because they are equal, it will differ in y value
-                  //   return v_->m.x()<v->m.x();
-                  // }
-                  // sort vertices from lowest y to highest
-                  /*if (v->m.z()<v_->m.z()) {
-                      return v->m.z()<v_->m.z();
-                  }
-                  else{ //if it doesnt get sorted by x value because they are equal, it will differ in y value
-                      return v_->m.z()<v->m.z();
-
-                  }*/
-
-
     });
-    // for (const auto& num : leaves) {
-    //     qDebug() << "x  " << num->m.x() << " y " << num->m.z()
-    //          << " )\n";
-    // }
 }
 
 
 wall::wall():VisualObject()
 {
-    Vertex v1{ 0.5f,  0.0f,  -400.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-right corner
-    Vertex v2{ 0.5f,  0.0f,  400.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-left corner
-    Vertex v3{ 0.5f,  10.0f,  -400.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-right corner
-    Vertex v4{ 0.5f,  10.0f,  400.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-left corner
+    Vertex v1{ 5.5f,  0.0f,  -400.0f,   1.0f, 0.0f, 0.0f,  0.0f, 0.0f};  //  bottom-right corner
+    Vertex v2{ 5.5f,  0.0f,  400.0f,   0.0f, 1.0f, 0.0f,  1.0f, 0.0f }; //  bottom-left corner
+    Vertex v3{ 5.5f,  10.0f,  -400.0f,   0.0f, 0.0f, 1.0f,  0.0f, 1.0f }; //  top-right corner
+    Vertex v4{ 5.5f,  10.0f,  400.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f }; //  top-left corner
 
     //Pushing 1st triangle,
     mVertices.push_back(v1);

@@ -104,7 +104,6 @@ std::vector<QuadTree *> QuadTree::findLeaves2(std::vector<QuadTree *> *leaves)
         if (no) //north right
             no->findLeaves(leaves);
     }
-
 }
 
 float QuadTree::averageHeight(QuadTree *quadtr)

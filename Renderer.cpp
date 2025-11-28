@@ -38,29 +38,34 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //------------------------4 triangle surface  for rolling ball for comp2 math--------------
     //surf=new TriangleSurface(assetPath+"Compulsory2_vertices.txt",assetPath+"Compulsory2_indices.txt"); //check
-    //surf=new TriangleSurface();
+    //task 2.1 - surface for testing 9.10.9
+    // surf=new TriangleSurface();
+    // surf->isActive=true;
+    // mObjects.push_back((surf));
     //mObjects.at(0)->setPosition(-2.f, 0.f, 2.f);
-    //------------------------compulsory 2 cloud point----------------
-    surf=new TriangleSurface(assetPath+"vert.txt");//generated surface
-    surf->isActive=true;
-    // TriangleSurface* surf2=new TriangleSurface(assetPath+"vert.txt",1);//point cloud of the surface
-    // surf2->isActive=true;
-    mObjects.push_back((surf));
-    //mObjects.push_back((surf2));
-    //mObjects.at(1)->setPosition(-588400.60f, 0.f, -7181100.45f); //z closer to 0, further away from me
-    //mObjects.at(1)->setPosition(-588400.60f, 0.f, -7181100.45f);
 
-    //mObjects.at(0)->scale(0.5);
-    //mObjects.at(0)->setPosition(0.f, -2.f, 1.f);
+    //------------------------POINT CLOUD AND GENERATED SURFACE ----------------
+    //generated surface
+    surf=new TriangleSurface(assetPath+"vert.txt");
+    surf->isActive=true;
+    mObjects.push_back((surf));
+
+    //point cloud of the surface
+    // TriangleSurface* surf2=new TriangleSurface(assetPath+"vert.txt",1);
+    // surf2->isActive=true;
+    // mObjects.push_back((surf2));
+    // mObjects.at(0)->setPosition(-588400.60f, 0.f, -7181100.45f);
+
+
 
     //------------ROLLING BALL------------
     // ball=new RollingBall(surf);
     // ball->isActive=true;
     // mObjects.push_back(ball);
-    //mObjects.at(1)->scale(0.5);
+    // mObjects.at(1)->scale(0.5);
 
-    //---------------------------fluid simulation, suitable for showing 1 ball
-    int ballsAmount=2;  //5000
+    //---------------------------FLUID SIMULATION, SUITABLE FOR SHOWING 1 BALL TOO
+    int ballsAmount=500;  //5000
     for(int i=0;i<ballsAmount;i++){
         mObjects.push_back(new RollingBall(surf)); //all are inactive -  isActive=false
     }
@@ -77,8 +82,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //--------------------------------
 
 
-    //track=new QuadraticSpline(0.5f);
-    //mObjects.push_back(track);
+    //--------------------WORLD AXIS-------
     WorldAxis* axis=new WorldAxis();
     axis->isActive=true;
     mObjects.push_back((axis));
@@ -481,7 +485,7 @@ void Renderer::startNextFrame()
 
     setViewProjectionMatrix();   //Update the view and projection matrix in the Uniform
 
-    ////fluid simulation
+    //fluid simulation
     timerSpawn+=0.07f; //just to make balls flow faster
     if(timerSpawn>variedTime){
         //activateBalls(4.0f, 3.f, 0.f); //single ball
@@ -496,7 +500,7 @@ void Renderer::startNextFrame()
         if((*it)->isBall && (*it)->isActive){
             spawnBalls((*it));
             if(!(*it)->madeBSpline){
-                makeFluidBSpline((*it)); //queue the b spline since we already iterate through mObjects
+               makeFluidBSpline((*it)); //queue the b spline since we already iterate through mObjects
             }
 
         }
@@ -565,6 +569,8 @@ void Renderer::startNextFrame()
     // // move ball
     // QVector2D pos={ball->getPosition().x(), ball->getPosition().z()};
     // ball->barysentriske(pos,0.0016f);
+
+
     // //check collision with the wall, adjust velocity and position
     // ballwalldistance=QVector3D::dotProduct({ball->getPosition()-wall_->center},wall_->normal);
     // if(fabs(ballwalldistance)<=ball->radius){
